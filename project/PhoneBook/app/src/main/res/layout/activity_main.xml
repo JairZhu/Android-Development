@@ -20,7 +20,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="80dp"
         android:layout_marginRight="16dp"
-        app:srcCompat="@drawable/ic_add_black_24dp"/>
+        app:srcCompat="@drawable/ic_dialpad_white_24dp"/>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
