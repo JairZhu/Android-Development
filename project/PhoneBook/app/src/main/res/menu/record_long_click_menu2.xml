@@ -6,7 +6,4 @@
     <item
         android:id="@+id/add_white_list"
         android:title="加入白名单" />
-    <item
-        android:title="呼叫"
-        android:id="@+id/call"/>
 </menu>

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,7 +34,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     Uri callrecorduri = Uri.parse("content://com.example.providers.recordDB/");
-    int[] images = { R.drawable.callin, R.drawable.callout, R.drawable.missed };
+    int[] images = {R.drawable.callin, R.drawable.callout, R.drawable.missed};
     ContentResolver resolver;
     AlertDialog alertDialog;
     ListView record_listview;
@@ -58,78 +59,68 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-        FloatingActionButton add = findViewById(R.id.add);
-        add.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton floatingActionButton = findViewById(R.id.dial_number);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TableLayout record_form = (TableLayout) getLayoutInflater().inflate(R.layout.new_record, null);
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                alertDialog = builder.setTitle("新增通话记录")
-                        .setView(record_form)
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Toast.makeText(getApplicationContext(), "取消新增通话记录", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                EditText newname = (EditText) alertDialog.findViewById(R.id.new_name);
-                                EditText newnumber = (EditText) alertDialog.findViewById(R.id.new_number);
-                                EditText newattribution = (EditText) alertDialog.findViewById(R.id.new_attribution);
-                                final EditText newtime = (EditText) alertDialog.findViewById(R.id.new_time);
-                                EditText newduration = (EditText) alertDialog.findViewById(R.id.new_duration);
-                                RadioGroup radioGroup = (RadioGroup) alertDialog.findViewById(R.id.radio_group);
-                                newtime.setInputType(InputType.TYPE_NULL);
-                                newtime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                                    @Override
-                                    public void onFocusChange(View v, boolean hasFocus) {
-                                        Calendar calendar = Calendar.getInstance();
-                                        new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
-                                            @Override
-                                            public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                                                newtime.setText(i + "/" + i1 + 1 + "/" + i2);
-                                            }
-                                        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
-                                    }
-                                });
-                                Cursor cursor = resolver.query(callrecorduri, new String[]{"id"}, null, null, "id desc");
-                                int index;
-                                if (cursor != null && cursor.getCount() != 0) {
-                                    cursor.moveToFirst();
-                                    index = cursor.getInt(0);
-                                }
-                                else
-                                    index = 0;
-                                ContentValues contentValues = new ContentValues();
-                                contentValues.put("id", index + 1);
-                                contentValues.put("number", newnumber.getText().toString());
-                                contentValues.put("name", newname.getText().toString());
-                                contentValues.put("attribution", newattribution.getText().toString());
-                                contentValues.put("calltime", newtime.getText().toString());
-                                contentValues.put("whitelist", 0);
-                                contentValues.put("duration", newduration.getText().toString());
-                                for (int j = 0; j < radioGroup.getChildCount(); ++j) {
-                                    RadioButton radioButton = (RadioButton) radioGroup.getChildAt(j);
-                                    if (radioButton.isChecked()) {
-                                        contentValues.put("status", j);
-                                    }
-                                }
-                                resolver.insert(callrecorduri, contentValues);
-                                cursor = resolver.query(callrecorduri, new String[]{"number", "name",
-                                                "attribution", "calltime", "status", "duration", "whitelist"},
-                                        null, null, null);
-                                change_record_list(cursor);
-                                adapter.notifyDataSetChanged();
-                            }
-                        }).create();
-                alertDialog.show();
+
             }
         });
         resolver = getContentResolver();
         record_listview = (ListView) findViewById(R.id.dial_listview);
         diplay_call_record();
+    }
+
+    public void add_new_call_record() {
+        TableLayout record_form = (TableLayout) getLayoutInflater().inflate(R.layout.new_record, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        alertDialog = builder.setTitle("新增通话记录")
+                .setView(record_form)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(getApplicationContext(), "取消新增通话记录", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        EditText newname = (EditText) alertDialog.findViewById(R.id.new_name);
+                        EditText newnumber = (EditText) alertDialog.findViewById(R.id.new_number);
+                        EditText newattribution = (EditText) alertDialog.findViewById(R.id.new_attribution);
+                        EditText newtime = (EditText) alertDialog.findViewById(R.id.new_time);
+                        EditText newduration = (EditText) alertDialog.findViewById(R.id.new_duration);
+                        RadioGroup radioGroup = (RadioGroup) alertDialog.findViewById(R.id.radio_group);
+                        Cursor cursor = resolver.query(callrecorduri, new String[]{"id"}, null, null, "id desc");
+                        int index;
+                        if (cursor != null && cursor.getCount() != 0) {
+                            cursor.moveToFirst();
+                            index = cursor.getInt(0);
+                        } else
+                            index = 0;
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put("id", index + 1);
+                        contentValues.put("number", newnumber.getText().toString());
+                        contentValues.put("name", newname.getText().toString());
+                        contentValues.put("attribution", newattribution.getText().toString());
+                        contentValues.put("calltime", newtime.getText().toString());
+                        contentValues.put("whitelist", 0);
+                        contentValues.put("duration", newduration.getText().toString());
+                        for (int j = 0; j < radioGroup.getChildCount(); ++j) {
+                            RadioButton radioButton = (RadioButton) radioGroup.getChildAt(j);
+                            if (radioButton.isChecked()) {
+                                contentValues.put("status", j);
+                            }
+                        }
+                        resolver.insert(callrecorduri, contentValues);
+                        cursor = resolver.query(callrecorduri, new String[]{"number", "name",
+                                        "attribution", "calltime", "status", "duration", "whitelist"},
+                                null, null, null);
+                        change_record_list(cursor);
+                        adapter.notifyDataSetChanged();
+                    }
+                }).create();
+        alertDialog.show();
     }
 
     public void change_record_list(Cursor cursor) {
@@ -155,6 +146,14 @@ public class MainActivity extends AppCompatActivity {
                 new String[]{"number", "name", "attribution", "calltime", "status", "duration"},
                 new int[]{R.id.phone_number, R.id.person_name, R.id.attribution, R.id.time, R.id.call_status, R.id.duration});
         record_listview.setAdapter(adapter);
+        record_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String phone_number = record_list.get(i).get("number").toString();
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phone_number));
+                startActivity(intent);
+            }
+        });
         record_listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -169,8 +168,6 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                                 case R.id.delete_record:
                                     break;
-                                case R.id.call:
-                                    break;
                                 case R.id.add_new_contact:
                                     break;
                                 case R.id.store_contact:
@@ -179,8 +176,7 @@ public class MainActivity extends AppCompatActivity {
                             return true;
                         }
                     });
-                }
-                else {
+                } else {
                     popupMenu.getMenuInflater().inflate(R.menu.record_long_click_menu2, popupMenu.getMenu());
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
@@ -189,8 +185,6 @@ public class MainActivity extends AppCompatActivity {
                                 case R.id.add_white_list:
                                     break;
                                 case R.id.delete_record:
-                                    break;
-                                case R.id.call:
                                     break;
                             }
                             return true;

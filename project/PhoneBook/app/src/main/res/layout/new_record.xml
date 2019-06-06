@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="0.8"
-            android:hint="请填写通话时间"
+            android:hint="通话时间：yyyy-mm-dd hh-mm-ss"
             android:inputType="none"
             android:padding="10dp"
             android:background="@drawable/edit_border"/>
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="0.8"
-            android:hint="请填写通话时长"
+            android:hint="通话时长：mm-ss"
             android:padding="10dp"
             android:background="@drawable/edit_border"/>
     </TableRow>
