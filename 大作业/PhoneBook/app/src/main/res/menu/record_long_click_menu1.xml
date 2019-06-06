@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/delete_record"
+        android:title="删除通话记录"/>
+    <item
+        android:id="@+id/add_white_list"
+        android:title="加入白名单"/>
+    <item
+        android:id="@+id/call"
+        android:title="呼叫"/>
+    <item
+        android:id="@+id/add_new_contact"
+        android:title="新建联系人"/>
+    <item
+        android:id="@+id/store_contact"
+        android:title="保存至已有联系人"/>
+</menu>
