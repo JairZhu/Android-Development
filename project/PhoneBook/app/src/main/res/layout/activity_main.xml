@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -10,24 +10,36 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/dial_listview"/>
+        android:id="@+id/dial_listview"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/navigation"
+        android:id="@+id/dialpad_layout"
+        android:background="@color/white">
+        <include
+            layout="@layout/dialpad" />
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/dial_number"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="80dp"
-        android:layout_marginRight="16dp"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toTopOf="@id/navigation"
+        app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/ic_dialpad_white_24dp"/>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:background="?android:attr/windowBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/navigation" />
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

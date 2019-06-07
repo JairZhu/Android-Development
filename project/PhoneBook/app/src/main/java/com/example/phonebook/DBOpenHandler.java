@@ -13,8 +13,7 @@ public class DBOpenHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table records(id int primary key, number varchar(11), name varchar(50)," +
-                "attribution varchar(50), status int, calltime datetime, duration time," +
-                "whitelist int default 0)");
+                "attribution varchar(50), status int, calltime datetime, duration time)");
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int old, int newv) { db.execSQL("");}
