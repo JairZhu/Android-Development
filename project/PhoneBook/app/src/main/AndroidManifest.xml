@@ -22,6 +22,10 @@
             android:authorities="com.example.providers.recordDB"
             android:name=".recordDB"
             android:exported="true"/>
+        <provider
+            android:authorities="com.example.providers.contactDB"
+            android:name=".contactDB"
+            android:exported="true"/>
     </application>
 
 </manifest>
