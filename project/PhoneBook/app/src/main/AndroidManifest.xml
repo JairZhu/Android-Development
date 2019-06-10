@@ -18,13 +18,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".AddContactActivity">
+            <intent-filter>
+                <action android:name="AddContact"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
         <provider
-            android:authorities="com.example.providers.recordDB"
-            android:name=".recordDB"
+            android:authorities="com.example.providers.RecordDB"
+            android:name=".RecordDB"
             android:exported="true"/>
         <provider
-            android:authorities="com.example.providers.contactDB"
-            android:name=".contactDB"
+            android:authorities="com.example.providers.ContactDB"
+            android:name=".ContactDB"
             android:exported="true"/>
     </application>
 

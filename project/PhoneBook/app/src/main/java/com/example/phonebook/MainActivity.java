@@ -25,11 +25,15 @@ import android.text.InputType;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.AlphabetIndexer;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
@@ -45,25 +49,30 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     // status(通话状态): 0-呼入，1-呼出，2-未接听
-    Uri callRecordUri = Uri.parse("content://com.example.providers.recordDB/");
-    int[] images = {R.drawable.callin, R.drawable.callout, R.drawable.missed};
-    ContentResolver resolver;
-    ActionBar actionBar;
-    AlertDialog alertDialog;
-    ListView record_listview;
-    SimpleAdapter adapter = null;
-    FloatingActionButton DialpadActionButton, AddContactButton;
-    RelativeLayout DialpadLayout, DialLayout, Contact_layout;
-    ArrayList<Map<String, Object>> record_list = new ArrayList<>();
-    TextView textView;
-    Button b1, b2, b3, b4, b5, b6, b7, b8, b9, b0, bstar, bdash;
-    ImageButton iCall, iBack, iDialpad;
+    private Uri callRecordUri = Uri.parse("content://com.example.providers.RecordDB/");
+    private Uri contactUri = Uri.parse("content://com.example.providers.ContactDB/");
+    private int[] images = {R.drawable.callin, R.drawable.callout, R.drawable.missed};
+    private ContentResolver resolver;
+    private ActionBar actionBar;
+    private AlertDialog alertDialog;
+    private ListView record_listview, contact_listview;
+    private SimpleAdapter adapter = null;
+    private AlphabetIndexer indexer;
+    private FloatingActionButton DialpadActionButton, AddContactButton;
+    private RelativeLayout DialpadLayout, DialLayout, Contact_layout;
+    private LinearLayout titleLayout;
+    private ArrayList<Map<String, Object>> record_list = new ArrayList<>();
+    private List<Contact> contactList = new ArrayList<>();
+    private TextView textView;
+    private Button b1, b2, b3, b4, b5, b6, b7, b8, b9, b0, bstar, bdash;
+    private ImageButton iCall, iBack, iDialpad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +89,12 @@ public class MainActivity extends AppCompatActivity {
         actionBar = (ActionBar) getSupportActionBar();
         actionBar.setTitle("拨号");
         Contact_layout.setVisibility(View.GONE);
+        initialContactView();
         diplayCallRecord();
+    }
+
+    private void initialContactView() {
+
     }
 
     private void DialpadsetOnClickListeners() {
@@ -266,7 +280,8 @@ public class MainActivity extends AppCompatActivity {
         AddContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),"添加联系人", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MainActivity.this, AddContactActivity.class);
+                startActivity(intent);
             }
         });
     }

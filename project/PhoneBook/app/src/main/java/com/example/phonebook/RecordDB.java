@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-public class recordDB extends ContentProvider {
+public class RecordDB extends ContentProvider {
     private DBOpenHandler dbOpenHandler;
     @Override
     public boolean onCreate() {

@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-public class contactDB extends ContentProvider {
+public class ContactDB extends ContentProvider {
     private ContactDBHandler contactDBHandler;
     private SQLiteDatabase db;
     @Override
