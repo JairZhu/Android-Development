@@ -39,7 +39,6 @@ public class AddContactActivity extends AppCompatActivity {
         newbirthday = (EditText) findViewById(R.id.new_birthday);
         newConactImage = (ImageButton) findViewById(R.id.new_contact_image);
         newwhitelist = (CheckBox) findViewById(R.id.add_white_list);
-
         newbirthday.setInputType(InputType.TYPE_NULL);
         newbirthday.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
