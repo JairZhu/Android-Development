@@ -106,49 +106,6 @@ public class MainActivity extends AppCompatActivity {
         diplayCallRecord();
     }
 
-    private void NewData() {
-        contactList.add(new Contact("A", "Abbey"));
-        contactList.add(new Contact("A", "Alex"));
-        contactList.add(new Contact("A", "Amy"));
-        contactList.add(new Contact("A", "Anne"));
-        contactList.add(new Contact("B", "Betty"));
-        contactList.add(new Contact("B", "Bob"));
-        contactList.add(new Contact("B", "Brian"));
-        contactList.add(new Contact("C", "Carl"));
-        contactList.add(new Contact("C", "Candy"));
-        contactList.add(new Contact("C", "Carlos"));
-        contactList.add(new Contact("C", "Charles"));
-        contactList.add(new Contact("C", "Christina"));
-        contactList.add(new Contact("D", "David"));
-        contactList.add(new Contact("D", "Daniel"));
-        contactList.add(new Contact("E", "Elizabeth"));
-        contactList.add(new Contact("E", "Eric"));
-        contactList.add(new Contact("E", "Eva"));
-        contactList.add(new Contact("F", "Frances"));
-        contactList.add(new Contact("F", "Frank"));
-        contactList.add(new Contact("I", "Ivy"));
-        contactList.add(new Contact("J", "James"));
-        contactList.add(new Contact("J", "John"));
-        contactList.add(new Contact("J", "Jessica"));
-        contactList.add(new Contact("K", "Karen"));
-        contactList.add(new Contact("K", "Karl"));
-        contactList.add(new Contact("K", "Kim"));
-        contactList.add(new Contact("L", "Leon"));
-        contactList.add(new Contact("L", "Lisa"));
-        contactList.add(new Contact("P", "Paul"));
-        contactList.add(new Contact("P", "Peter"));
-        contactList.add(new Contact("S", "Sarah"));
-        contactList.add(new Contact("S", "Steven"));
-        contactList.add(new Contact("R", "Robert"));
-        contactList.add(new Contact("R", "Ryan"));
-        contactList.add(new Contact("T", "Tom"));
-        contactList.add(new Contact("T", "Tony"));
-        contactList.add(new Contact("W", "Wendy"));
-        contactList.add(new Contact("W", "Will"));
-        contactList.add(new Contact("W", "William"));
-        contactList.add(new Contact("Z", "Zoe"));
-    }
-
     private void setDialViewVisible(int visible) {
         record_listview.setVisibility(visible);
         DialpadLayout.setVisibility(visible);
@@ -461,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void diplayCallRecord() {
         Cursor cursor = resolver.query(callRecordUri, new String[]{"number", "name", "attribution",
-                "calltime", "duration", "status"}, null, null, null);
+                "calltime", "duration", "status"}, null, null, "calltime desc");
         changeRecordList(cursor);
         adapter = new SimpleAdapter(this, record_list, R.layout.dial_listview_item,
                 new String[]{"number", "name", "attribution", "calltime", "status", "duration"},

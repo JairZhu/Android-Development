@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="分享联系人"
+        android:id="@+id/share_contact"/>
+    <item
+        android:title="加入白名单"
+        android:id="@+id/add_white_list"/>
+    <item
+        android:title="擦除联系痕迹"
+        android:id="@+id/delete_record"/>
+    <item
+        android:title="删除联系人"
+        android:id="@+id/delete_contact"/>
+</menu>

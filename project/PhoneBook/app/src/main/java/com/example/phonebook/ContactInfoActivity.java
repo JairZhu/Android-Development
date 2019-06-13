@@ -2,15 +2,21 @@ package com.example.phonebook;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.ArrayList;
 
 public class ContactInfoActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private String[] titles = new String[]{"详情", "通话记录"};
+    private ArrayList<Fragment> fragments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -22,7 +28,17 @@ public class ContactInfoActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         tabLayout = (TabLayout) findViewById(R.id.tablayout);
         viewPager = (ViewPager) findViewById(R.id.viewpaper);
+        fragments.add(new ContactInfoFragment());
+        fragments.add(new ContactInfoRecord());
+        ContactFragmentPagerAdapter adapter = new ContactFragmentPagerAdapter(getSupportFragmentManager(), fragments, titles);
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.qr_code_menu, menu);
+        return true;
     }
 
     @Override
@@ -30,6 +46,9 @@ public class ContactInfoActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 this.finish();
+                break;
+            case R.id.qr_code:
+                //TODO:分享联系人
                 break;
         }
         return true;
