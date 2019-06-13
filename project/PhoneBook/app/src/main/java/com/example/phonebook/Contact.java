@@ -1,9 +1,13 @@
 package com.example.phonebook;
 
 public class Contact {
-    private String number, name, abbribution, birthday;
-    private char sortkey;
+    private String number, name, abbribution, birthday, sortkey;
     private int whitelist;
+    public Contact(String index, String name) {
+        this.sortkey = index;
+        this.name = name;
+    }
+    public Contact() {}
     public String getNumber() {
         return number;
     }
@@ -16,10 +20,16 @@ public class Contact {
     public String getBirthday() {
         return birthday;
     }
-    public int getWhitelist() { return whitelist; }
-    public String getSortkey() { return sortkey + ""; }
+    public int getWhitelist() {
+        return whitelist;
+    }
+    public String getIndex() {
+        return sortkey + "";
+    }
 
-    public void setSortkey(char sortkey) { this.sortkey = sortkey; }
+    public void setSortkey(String sortkey) {
+        this.sortkey = sortkey;
+    }
     public void setAbbribution(String abbribution) {
         this.abbribution = abbribution;
     }
@@ -28,8 +38,15 @@ public class Contact {
     }
     public void setName(String name) {
         this.name = name;
+        String key = name.substring(0, 1).toUpperCase();
+        if (key.matches("[A-Z]"))
+            sortkey = key;
+        else
+            sortkey = "#";
     }
-    public void setBirthday(String birthday) { this.birthday = birthday; }
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
     public void setWhitelist(int in) {
         this.whitelist = in;
     }

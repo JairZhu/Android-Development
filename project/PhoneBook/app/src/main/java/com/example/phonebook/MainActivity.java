@@ -20,6 +20,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.view.MenuItem;
@@ -47,6 +49,8 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,17 +66,27 @@ public class MainActivity extends AppCompatActivity {
     private ContentResolver resolver;
     private ActionBar actionBar;
     private AlertDialog alertDialog;
-    private ListView record_listview, contact_listview;
+    private ListView record_listview;
+    private RecyclerView contacts_view;
     private SimpleAdapter adapter = null;
-    private AlphabetIndexer indexer;
+    private ContactsAdapter contactsAdapter;
     private FloatingActionButton DialpadActionButton, AddContactButton;
-    private RelativeLayout DialpadLayout, DialLayout, Contact_layout;
-    private LinearLayout titleLayout;
+    private RelativeLayout DialpadLayout;
     private ArrayList<Map<String, Object>> record_list = new ArrayList<>();
     private List<Contact> contactList = new ArrayList<>();
+    private WaveSideBar sideBar;
     private TextView textView;
     private Button b1, b2, b3, b4, b5, b6, b7, b8, b9, b0, bstar, bdash;
     private ImageButton iCall, iBack, iDialpad;
+    private Comparator<Contact> comparator = new Comparator<Contact>() {
+        @Override
+        public int compare(Contact contact, Contact t1) {
+            if (contact.getIndex().compareTo(t1.getIndex()) < 0)
+                return -1;
+            else
+                return 1;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,18 +97,108 @@ public class MainActivity extends AppCompatActivity {
         initialFloatingActionButton();
         DialpadsetOnClickListeners();
         resolver = getContentResolver();
-        DialLayout = (RelativeLayout) findViewById(R.id.dial_layout);
-        Contact_layout = (RelativeLayout) findViewById(R.id.contact_layout);
-        record_listview = (ListView) DialLayout.findViewById(R.id.dial_listview);
-        actionBar = (ActionBar) getSupportActionBar();
-        actionBar.setTitle("拨号");
-        Contact_layout.setVisibility(View.GONE);
         initialContactView();
+        initial_views();
         diplayCallRecord();
     }
 
-    private void initialContactView() {
+    private void NewData() {
+        contactList.add(new Contact("A", "Abbey"));
+        contactList.add(new Contact("A", "Alex"));
+        contactList.add(new Contact("A", "Amy"));
+        contactList.add(new Contact("A", "Anne"));
+        contactList.add(new Contact("B", "Betty"));
+        contactList.add(new Contact("B", "Bob"));
+        contactList.add(new Contact("B", "Brian"));
+        contactList.add(new Contact("C", "Carl"));
+        contactList.add(new Contact("C", "Candy"));
+        contactList.add(new Contact("C", "Carlos"));
+        contactList.add(new Contact("C", "Charles"));
+        contactList.add(new Contact("C", "Christina"));
+        contactList.add(new Contact("D", "David"));
+        contactList.add(new Contact("D", "Daniel"));
+        contactList.add(new Contact("E", "Elizabeth"));
+        contactList.add(new Contact("E", "Eric"));
+        contactList.add(new Contact("E", "Eva"));
+        contactList.add(new Contact("F", "Frances"));
+        contactList.add(new Contact("F", "Frank"));
+        contactList.add(new Contact("I", "Ivy"));
+        contactList.add(new Contact("J", "James"));
+        contactList.add(new Contact("J", "John"));
+        contactList.add(new Contact("J", "Jessica"));
+        contactList.add(new Contact("K", "Karen"));
+        contactList.add(new Contact("K", "Karl"));
+        contactList.add(new Contact("K", "Kim"));
+        contactList.add(new Contact("L", "Leon"));
+        contactList.add(new Contact("L", "Lisa"));
+        contactList.add(new Contact("P", "Paul"));
+        contactList.add(new Contact("P", "Peter"));
+        contactList.add(new Contact("S", "Sarah"));
+        contactList.add(new Contact("S", "Steven"));
+        contactList.add(new Contact("R", "Robert"));
+        contactList.add(new Contact("R", "Ryan"));
+        contactList.add(new Contact("T", "Tom"));
+        contactList.add(new Contact("T", "Tony"));
+        contactList.add(new Contact("W", "Wendy"));
+        contactList.add(new Contact("W", "Will"));
+        contactList.add(new Contact("W", "William"));
+        contactList.add(new Contact("Z", "Zoe"));
+    }
 
+    private void setDialViewVisible(int visible) {
+        record_listview.setVisibility(visible);
+        DialpadLayout.setVisibility(visible);
+        DialpadActionButton.setVisibility(View.GONE);
+    }
+
+    private void setContactViewVisible(int visible) {
+        contacts_view.setVisibility(visible);
+        sideBar.setVisibility(visible);
+        AddContactButton.setVisibility(visible);
+    }
+
+    private void initial_views() {
+        record_listview = (ListView) findViewById(R.id.dial_listview);
+        actionBar = (ActionBar) getSupportActionBar();
+        actionBar.setTitle("拨号");
+        setContactViewVisible(View.GONE);
+    }
+
+    private void updateContactList() {
+        contactList.clear();
+        Cursor cursor = resolver.query(contactUri, new String[] {"name", "number", "attribution", "birthday", "whitelist"},
+                null, null, null);
+        while (cursor.moveToNext()) {
+            Contact contact = new Contact();
+            contact.setName(cursor.getString(cursor.getColumnIndex("name")));
+            contact.setNumber(cursor.getString(cursor.getColumnIndex("number")));
+            contact.setAbbribution(cursor.getString(cursor.getColumnIndex("attribution")));
+            contact.setBirthday(cursor.getString(cursor.getColumnIndex("birthday")));
+            contact.setWhitelist(cursor.getInt(cursor.getColumnIndex("whitelist")));
+            contactList.add(contact);
+        }
+        Collections.sort(contactList, comparator);
+    }
+
+    private void initialContactView() {
+        //updateContactList();
+        NewData();
+        contacts_view = (RecyclerView) findViewById(R.id.contact_recyclerview);
+        contacts_view.setLayoutManager(new LinearLayoutManager(this));
+        contactsAdapter = new ContactsAdapter(contactList, R.layout.contact_listview_item);
+        contacts_view.setAdapter(contactsAdapter);
+        sideBar = (WaveSideBar) findViewById(R.id.side_bar);
+        sideBar.setOnSelectIndexItemListener(new WaveSideBar.OnSelectIndexItemListener() {
+            @Override
+            public void onSelectIndexItem(String index) {
+                for (int i = 0; i < contactList.size(); ++i) {
+                    if (contactList.get(i).getIndex().equals(index)) {
+                        ((LinearLayoutManager) contacts_view.getLayoutManager()).scrollToPositionWithOffset(i, 0);
+                        return;
+                    }
+                }
+            }
+        });
     }
 
     private void DialpadsetOnClickListeners() {
@@ -282,6 +386,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, AddContactActivity.class);
                 startActivity(intent);
+                updateContactList();
+                contactsAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -294,13 +400,13 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.dial:
                         actionBar.setTitle("拨号");
-                        DialLayout.setVisibility(View.VISIBLE);
-                        Contact_layout.setVisibility(View.GONE);
+                        setDialViewVisible(View.VISIBLE);
+                        setContactViewVisible(View.GONE);
                         return true;
                     case R.id.contact:
                         actionBar.setTitle("联系人");
-                        DialLayout.setVisibility(View.GONE);
-                        Contact_layout.setVisibility(View.VISIBLE);
+                        setDialViewVisible(View.GONE);
+                        setContactViewVisible(View.VISIBLE);
                         return true;
                 }
                 return false;

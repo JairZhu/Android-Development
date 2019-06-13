@@ -85,6 +85,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="0.8"
                 android:inputType="none"
+                android:hint="请选择日期"
                 android:padding="10dp"
                 android:background="@drawable/edit_border"/>
         </TableRow>
