@@ -46,6 +46,8 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -76,12 +78,14 @@ public class MainActivity extends AppCompatActivity {
     private List<Contact> contactList = new ArrayList<>();
     private WaveSideBar sideBar;
     private TextView textView;
-    private Button b1, b2, b3, b4, b5, b6, b7, b8, b9, b0, bstar, bdash;
-    private ImageButton iCall, iBack, iDialpad;
     private Comparator<Contact> comparator = new Comparator<Contact>() {
         @Override
         public int compare(Contact contact, Contact t1) {
-            if (contact.getIndex().compareTo(t1.getIndex()) < 0)
+            if (contact.getIndex().equals("#"))
+                return 1;
+            else if (t1.getIndex().equals("#"))
+                return -1;
+            else if (contact.getIndex().compareTo(t1.getIndex()) < 0)
                 return -1;
             else
                 return 1;
@@ -181,11 +185,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initialContactView() {
-        //updateContactList();
-        NewData();
+        updateContactList();
+//        NewData();
         contacts_view = (RecyclerView) findViewById(R.id.contact_recyclerview);
         contacts_view.setLayoutManager(new LinearLayoutManager(this));
-        contactsAdapter = new ContactsAdapter(contactList, R.layout.contact_listview_item);
+        contactsAdapter = new ContactsAdapter(this, contactList, R.layout.contact_listview_item);
         contacts_view.setAdapter(contactsAdapter);
         sideBar = (WaveSideBar) findViewById(R.id.side_bar);
         sideBar.setOnSelectIndexItemListener(new WaveSideBar.OnSelectIndexItemListener() {
@@ -202,6 +206,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void DialpadsetOnClickListeners() {
+        Button b1, b2, b3, b4, b5, b6, b7, b8, b9, b0, bstar, bdash;
+        ImageButton iCall, iBack, iDialpad;
         DialpadLayout = findViewById(R.id.dialpad_layout);
         textView = DialpadLayout.findViewById(R.id.textView);
         b1 = DialpadLayout.findViewById(R.id.b1);
@@ -364,10 +370,16 @@ public class MainActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 1);
         }
-        Intent intent = new Intent(Intent.ACTION_CALL);
-        intent.setData(Uri.parse("tel:" + phoneNumber));
-        startActivity(intent);
-        addNewCallRecord(phoneNumber);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+                == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Intent.ACTION_CALL);
+            intent.setData(Uri.parse("tel:" + phoneNumber));
+            startActivity(intent);
+            addNewCallRecord(phoneNumber);
+        }
+        else {
+            Toast.makeText(this,"没有权限，请给予权限！", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void initialFloatingActionButton() {
@@ -385,11 +397,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, AddContactActivity.class);
-                startActivity(intent);
-                updateContactList();
-                contactsAdapter.notifyDataSetChanged();
+                startActivityForResult(intent, 1);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 1:
+                if (requestCode == 1) {
+                    updateContactList();
+                    contactsAdapter.notifyDataSetChanged();
+                }
+                break;
+        }
     }
 
     public void initialNavigation() {

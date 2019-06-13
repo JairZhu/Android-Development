@@ -3,6 +3,7 @@ package com.example.phonebook;
 import android.app.DatePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -90,6 +91,9 @@ public class AddContactActivity extends AppCompatActivity {
                 else
                     contentValues.put("whitelist", 0);
                 resolver.insert(uri, contentValues);
+                Intent intent = getIntent();
+                intent.putExtra("over", true);
+                setResult(1);
                 this.finish();
                 break;
         }

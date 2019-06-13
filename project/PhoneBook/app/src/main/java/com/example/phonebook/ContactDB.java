@@ -20,19 +20,19 @@ public class ContactDB extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
         db.insert("contacts", null, contentValues);
-        db.close();
+//        db.close();
         return uri;
     }
     @Override
     public int delete(Uri uri, String where, String[] whereargs) {
         int ret = db.delete("contacts", where, whereargs);
-        db.close();
+//        db.close();
         return ret;
     }
     @Override
     public int update(Uri uri, ContentValues contentValues, String where, String[] whereargs) {
         int ret = db.update("contacts", contentValues, where, whereargs);
-        db.close();
+//        db.close();
         return ret;
     }
     @Override

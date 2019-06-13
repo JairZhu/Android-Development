@@ -1,11 +1,18 @@
 package com.example.phonebook;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -13,17 +20,31 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
 
     private List<Contact> contacts;
     private int layoutId;
+    private Context context;
 
-    public ContactsAdapter(List<Contact> contacts, int layoutId) {
+    public ContactsAdapter(Context context, List<Contact> contacts, int layoutId) {
         this.contacts = contacts;
         this.layoutId = layoutId;
+        this.context = context;
     }
 
     @Override
     public ContactsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(layoutId, null);
-        return new ContactsViewHolder(view);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextView name = (TextView) view.findViewById(R.id.contact_name);
+                Intent intent = new Intent(context, ContactInfoActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("name", name.getText().toString());
+                intent.putExtra("key", bundle);
+                context.startActivity(intent);
+            }
+        });
+        ContactsViewHolder holder = new ContactsViewHolder(view);
+        return holder;
     }
 
     @Override

@@ -18,8 +18,8 @@ public class WaveSideBar extends View {
     private final static int DEFAULT_TEXT_SIZE = 12; // sp
     private final static int DEFAULT_MAX_OFFSET = 60; //dp
 
-    private final static String[] DEFAULT_INDEX_ITEMS = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I",
-            "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+    private final static String[] DEFAULT_INDEX_ITEMS = {"A", "B", "C", "D", "E", "F", "G", "H", "I",
+            "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "#"};
 
     private String[] mIndexItems;
 

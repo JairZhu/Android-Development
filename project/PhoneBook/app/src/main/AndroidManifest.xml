@@ -24,6 +24,12 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity android:name=".ContactInfoActivity">
+            <intent-filter>
+                <action android:name="ContactInfo"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
         <provider
             android:authorities="com.example.providers.RecordDB"
             android:name=".RecordDB"
