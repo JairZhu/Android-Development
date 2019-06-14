@@ -298,6 +298,13 @@ public class MainActivity extends AppCompatActivity {
                 final String newText = textView.getText().toString();
                 if (newText.length() > 0) {
                     makePhoneCall.makeCall(newText);
+                    Cursor cursor = resolver.query(callRecordUri, new String[]{"number", "name", "attribution",
+                            "calltime", "duration", "status"}, null, null, null);
+                    updateRecordListView(cursor);
+                }
+                else {
+                    String number = record_list.get(0).get("number").toString();
+                    textView.setText(number);
                 }
             }
         });
