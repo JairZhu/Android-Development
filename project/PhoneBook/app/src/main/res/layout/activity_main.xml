@@ -10,7 +10,7 @@
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="460dp"
         android:id="@+id/dial_listview"
         app:layout_constraintTop_toTopOf="parent"/>
 

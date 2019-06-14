@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
     private int[] images = {R.drawable.callin, R.drawable.callout, R.drawable.missed};
     private ContentResolver resolver;
     private ActionBar actionBar;
-    private AlertDialog alertDialog;
     private ListView record_listview;
     private RecyclerView contacts_view;
     private SimpleAdapter adapter = null;
@@ -78,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Contact> contactList = new ArrayList<>();
     private WaveSideBar sideBar;
     private TextView textView;
+    private MakePhoneCall makePhoneCall;
     private Comparator<Contact> comparator = new Comparator<Contact>() {
         @Override
         public int compare(Contact contact, Contact t1) {
@@ -91,19 +91,39 @@ public class MainActivity extends AppCompatActivity {
                 return 1;
         }
     };
+    private Comparator<Map<String, Object>> recordComparator = new Comparator<Map<String, Object>>() {
+        @Override
+        public int compare(Map<String, Object> stringObjectMap, Map<String, Object> t1) {
+            if (stringObjectMap.get("calltime").toString().compareTo(t1.get("calltime").toString()) < 0)
+                return 1;
+            else
+                return -1;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        resolver = getContentResolver();
+        makePhoneCall = new MakePhoneCall(this, resolver);
 //        getApplicationContext().deleteDatabase("records");
         initialNavigation();
         initialFloatingActionButton();
         DialpadsetOnClickListeners();
-        resolver = getContentResolver();
         initialContactView();
-        initial_views();
+        actionBar = (ActionBar) getSupportActionBar();
+        actionBar.setTitle("拨号");
+        setContactViewVisible(View.GONE);
         diplayCallRecord();
+        getPermission();
+    }
+
+    private void getPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.CALL_PHONE}, 1);
+        }
     }
 
     private void setDialViewVisible(int visible) {
@@ -118,32 +138,28 @@ public class MainActivity extends AppCompatActivity {
         AddContactButton.setVisibility(visible);
     }
 
-    private void initial_views() {
-        record_listview = (ListView) findViewById(R.id.dial_listview);
-        actionBar = (ActionBar) getSupportActionBar();
-        actionBar.setTitle("拨号");
-        setContactViewVisible(View.GONE);
-    }
-
-    private void updateContactList() {
+    private void updateContactListView() {
         contactList.clear();
-        Cursor cursor = resolver.query(contactUri, new String[] {"name", "number", "attribution", "birthday", "whitelist"},
+        Cursor cursor = resolver.query(contactUri, new String[] {"distinct name"},
                 null, null, null);
         while (cursor.moveToNext()) {
             Contact contact = new Contact();
             contact.setName(cursor.getString(cursor.getColumnIndex("name")));
-            contact.setNumber(cursor.getString(cursor.getColumnIndex("number")));
-            contact.setAbbribution(cursor.getString(cursor.getColumnIndex("attribution")));
-            contact.setBirthday(cursor.getString(cursor.getColumnIndex("birthday")));
-            contact.setWhitelist(cursor.getInt(cursor.getColumnIndex("whitelist")));
             contactList.add(contact);
         }
         Collections.sort(contactList, comparator);
+        contactsAdapter.notifyDataSetChanged();
     }
 
     private void initialContactView() {
-        updateContactList();
-//        NewData();
+        Cursor cursor = resolver.query(contactUri, new String[] {"distinct name"},
+                null, null, null);
+        while (cursor.moveToNext()) {
+            Contact contact = new Contact();
+            contact.setName(cursor.getString(cursor.getColumnIndex("name")));
+            contactList.add(contact);
+        }
+        Collections.sort(contactList, comparator);
         contacts_view = (RecyclerView) findViewById(R.id.contact_recyclerview);
         contacts_view.setLayoutManager(new LinearLayoutManager(this));
         contactsAdapter = new ContactsAdapter(this, contactList, R.layout.contact_listview_item);
@@ -281,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final String newText = textView.getText().toString();
                 if (newText.length() > 0) {
-                    makePhoneCall(newText);
+                    makePhoneCall.makeCall(newText);
                 }
             }
         });
@@ -292,51 +308,6 @@ public class MainActivity extends AppCompatActivity {
                 DialpadActionButton.setVisibility(View.VISIBLE);
             }
         });
-    }
-
-    private void addNewCallRecord(String phoneNumber) {
-        //TODO:实现添加记录功能
-        ContentValues contentValues = new ContentValues();
-        Cursor cursor = resolver.query(callRecordUri, new String[]{"id"}, null, null, "id desc");
-        int index;
-        if (cursor != null && cursor.getCount() != 0) {
-            cursor.moveToFirst();
-            index = cursor.getInt(0);
-        } else
-            index = 0;
-        contentValues.put("id", index + 1);
-        contentValues.put("number", phoneNumber);
-        contentValues.put("status", 1);
-        //TODO:实现查找号码对应的联系人姓名、归属地
-        //contentValues.put("name", );
-        //contentValues.put("attribution",);
-        //contentValues.put("duration", 0);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        String currentTime = simpleDateFormat.format(new Date(System.currentTimeMillis()));
-        contentValues.put("calltime", currentTime);
-        resolver.insert(callRecordUri, contentValues);
-        cursor = resolver.query(callRecordUri, new String[]{"number", "name",
-                        "attribution", "calltime", "status", "duration"},
-                null, null, null);
-        changeRecordList(cursor);
-        adapter.notifyDataSetChanged();
-    }
-
-    private void makePhoneCall(String phoneNumber) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 1);
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
-                == PackageManager.PERMISSION_GRANTED) {
-            Intent intent = new Intent(Intent.ACTION_CALL);
-            intent.setData(Uri.parse("tel:" + phoneNumber));
-            startActivity(intent);
-            addNewCallRecord(phoneNumber);
-        }
-        else {
-            Toast.makeText(this,"没有权限，请给予权限！", Toast.LENGTH_LONG).show();
-        }
     }
 
     private void initialFloatingActionButton() {
@@ -354,22 +325,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, AddContactActivity.class);
-                startActivityForResult(intent, 1);
+                startActivity(intent);
             }
         });
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case 1:
-                if (requestCode == 1) {
-                    updateContactList();
-                    contactsAdapter.notifyDataSetChanged();
-                }
-                break;
-        }
+    protected void onRestart() {
+        super.onRestart();
+        updateContactListView();
+        Cursor cursor = resolver.query(callRecordUri, new String[]{"number", "name", "attribution",
+                "calltime", "duration", "status"}, null, null, null);
+        updateRecordListView(cursor);
     }
 
     public void initialNavigation() {
@@ -394,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void changeRecordList(Cursor cursor) {
+    private void updateRecordListView(Cursor cursor) {
         record_list.clear();
         while (cursor != null && cursor.moveToNext()) {
             Map<String, Object> map = new HashMap<>();
@@ -406,6 +373,8 @@ public class MainActivity extends AppCompatActivity {
             map.put("status", images[cursor.getInt(cursor.getColumnIndex("status"))]);
             record_list.add(map);
         }
+        Collections.sort(record_list, recordComparator);
+        adapter.notifyDataSetChanged();
     }
 
     private void deleteCallRecord(int position) {
@@ -417,9 +386,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void diplayCallRecord() {
+        record_listview = (ListView) findViewById(R.id.dial_listview);
         Cursor cursor = resolver.query(callRecordUri, new String[]{"number", "name", "attribution",
-                "calltime", "duration", "status"}, null, null, "calltime desc");
-        changeRecordList(cursor);
+                "calltime", "duration", "status"}, null, null, null);
+        while (cursor != null && cursor.moveToNext()) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("number", cursor.getString(cursor.getColumnIndex("number")));
+            map.put("name", cursor.getString(cursor.getColumnIndex("name")));
+            map.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
+            map.put("calltime", cursor.getString(cursor.getColumnIndex("calltime")));
+            map.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
+            map.put("status", images[cursor.getInt(cursor.getColumnIndex("status"))]);
+            record_list.add(map);
+        }
+        Collections.sort(record_list, recordComparator);
         adapter = new SimpleAdapter(this, record_list, R.layout.dial_listview_item,
                 new String[]{"number", "name", "attribution", "calltime", "status", "duration"},
                 new int[]{R.id.phone_number, R.id.person_name, R.id.attribution, R.id.time, R.id.call_status, R.id.duration});
@@ -428,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String phone_number = record_list.get(i).get("number").toString();
-                makePhoneCall(phone_number);
+                makePhoneCall.makeCall(phone_number);
             }
         });
         record_listview.setOnTouchListener(new View.OnTouchListener() {

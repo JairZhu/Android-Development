@@ -14,6 +14,8 @@
         android:layout_toRightOf="@id/call_status"
         android:id="@+id/person_name"
         android:text="联系人"
+        android:textColor="@color/black"
+        android:textSize="18sp"
         android:layout_margin="5dp"/>
     <TextView
         android:layout_width="wrap_content"
@@ -21,6 +23,8 @@
         android:layout_toRightOf="@id/person_name"
         android:id="@+id/phone_number"
         android:text="12345678901"
+        android:textColor="@color/black"
+        android:textSize="18sp"
         android:layout_margin="5dp"/>
     <TextView
         android:layout_width="wrap_content"

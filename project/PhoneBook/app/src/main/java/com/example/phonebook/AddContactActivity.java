@@ -91,9 +91,6 @@ public class AddContactActivity extends AppCompatActivity {
                 else
                     contentValues.put("whitelist", 0);
                 resolver.insert(uri, contentValues);
-                Intent intent = getIntent();
-                intent.putExtra("over", true);
-                setResult(1);
                 this.finish();
                 break;
         }
