@@ -303,8 +303,10 @@ public class MainActivity extends AppCompatActivity {
                     updateRecordListView(cursor);
                 }
                 else {
-                    String number = record_list.get(0).get("number").toString();
-                    textView.setText(number);
+                    if (record_list.size() > 0) {
+                        String number = record_list.get(0).get("number").toString();
+                        textView.setText(number);
+                    }
                 }
             }
         });

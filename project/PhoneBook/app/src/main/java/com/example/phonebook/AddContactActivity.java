@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -16,12 +17,13 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
 public class AddContactActivity extends AppCompatActivity {
     private Uri uri = Uri.parse("content://com.example.providers.ContactDB/");
-    private EditText newname, newnumber, newattribution, newbirthday;
+    private EditText newname, newnumber, newbirthday;
     private ImageButton newConactImage;
     private CheckBox newwhitelist;
     private ContentResolver resolver;
@@ -36,7 +38,6 @@ public class AddContactActivity extends AppCompatActivity {
         resolver = getContentResolver();
         newname = (EditText) findViewById(R.id.new_name);
         newnumber = (EditText) findViewById(R.id.new_number);
-        newattribution = (EditText) findViewById(R.id.new_attribution);
         newbirthday = (EditText) findViewById(R.id.new_birthday);
         newConactImage = (ImageButton) findViewById(R.id.new_contact_image);
         newwhitelist = (CheckBox) findViewById(R.id.add_white_list);
@@ -81,19 +82,41 @@ public class AddContactActivity extends AppCompatActivity {
                 this.finish();
                 break;
             case R.id.check:
-                ContentValues contentValues = new ContentValues();
-                contentValues.put("name", newname.getText().toString());
-                contentValues.put("number", newnumber.getText().toString());
-                contentValues.put("attribution", newattribution.getText().toString());
-                contentValues.put("birthday", newbirthday.getText().toString());
-                if (newwhitelist.isChecked())
-                    contentValues.put("whitelist", 1);
+                if (checkInfo()) {
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("name", newname.getText().toString());
+                    contentValues.put("number", newnumber.getText().toString());
+                    contentValues.put("attribution", new QueryAttribution(newnumber.getText().toString()).getAttribution());
+                    Cursor cursor = resolver.query(uri, new String[]{"birthday"}, "name = ?",
+                            new String[]{newname.getText().toString()}, null);
+                    if (cursor != null && cursor.moveToNext()) {
+                        String birthday = cursor.getString(cursor.getColumnIndex("birthday"));
+                        if (birthday != null && birthday.length() > 0)
+                            contentValues.put("birthday", birthday);
+                        else
+                            contentValues.put("birthday", newbirthday.getText().toString());
+                    } else
+                        contentValues.put("birthday", newbirthday.getText().toString());
+                    if (newwhitelist.isChecked())
+                        contentValues.put("whitelist", 1);
+                    else
+                        contentValues.put("whitelist", 0);
+                    resolver.insert(uri, contentValues);
+                    this.finish();
+                }
                 else
-                    contentValues.put("whitelist", 0);
-                resolver.insert(uri, contentValues);
-                this.finish();
+                    Toast.makeText(this, "请将信息填写完整！", Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;
+    }
+
+    private boolean checkInfo() {
+        if (newname.getText() != null && newname.getText().toString().length() > 0
+            && newnumber.getText() != null && newnumber.getText().toString().length() > 0
+            && newbirthday.getText() != null && newbirthday.getText().toString().length() > 0)
+            return true;
+        else
+            return false;
     }
 }

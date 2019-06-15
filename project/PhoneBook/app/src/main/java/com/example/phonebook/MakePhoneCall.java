@@ -54,15 +54,15 @@ public class MakePhoneCall {
         contentValues.put("id", index + 1);
         contentValues.put("number", phoneNumber);
         contentValues.put("status", 1);
-        //TODO:实现查找号码对应的联系人姓名、归属地
         Cursor contactCursor = resolver.query(contactUri, new String[]{"name", "attribution"},
                 "number = ?", new String[]{phoneNumber}, null);
         if (contactCursor != null && contactCursor.moveToNext()) {
             contentValues.put("name", contactCursor.getString(contactCursor.getColumnIndex("name")));
             contentValues.put("attribution", contactCursor.getString(contactCursor.getColumnIndex("attribution")));
         }
-        //contentValues.put("name", );
-        //contentValues.put("attribution",);
+        else
+            contentValues.put("attribution", new QueryAttribution(phoneNumber).getAttribution());
+        //TODO:获取通话时间
         //contentValues.put("duration", 0);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         String currentTime = simpleDateFormat.format(new Date(System.currentTimeMillis()));
