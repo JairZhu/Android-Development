@@ -3,9 +3,11 @@ package com.example.phonebook;
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,7 +16,9 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +29,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -37,7 +43,13 @@ import java.util.Map;
 public class ContactInfoFragment extends Fragment {
     private String name;
     private Uri contactUri = Uri.parse("content://com.example.providers.ContactDB/");
+    private Uri callRecordUri = Uri.parse("content://com.example.providers.RecordDB/");
     private ContentResolver resolver;
+    private ListView listView;
+    private ArrayList<Map<String, Object>> lists;
+    private SimpleAdapter adapter;
+    private Toolbar toolbar;
+    private AlertDialog alertDialog;
 
     public void setName(String name) {
         this.name = name;
@@ -54,17 +66,17 @@ public class ContactInfoFragment extends Fragment {
     }
 
     private void setListView(View rootView) {
-        ListView listView = (ListView) rootView.findViewById(R.id.contact_info_listview);
+        listView = (ListView) rootView.findViewById(R.id.contact_info_listview);
         Cursor cursor = resolver.query(contactUri, new String[]{"number", "attribution"},
                 "name = ?", new String[]{name}, null);
-        final ArrayList<Map<String, Object>> lists = new ArrayList<>();
+        lists = new ArrayList<>();
         while (cursor != null && cursor.moveToNext()) {
             Map<String, Object> map = new HashMap<>();
             map.put("number", cursor.getString(cursor.getColumnIndex("number")));
             map.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
             lists.add(map);
         }
-        SimpleAdapter adapter = new SimpleAdapter(getContext(), lists, R.layout.contact_info_list_item,
+        adapter = new SimpleAdapter(getContext(), lists, R.layout.contact_info_list_item,
                 new String[]{"number", "attribution"}, new int[]{R.id.number, R.id.attribution});
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -78,7 +90,7 @@ public class ContactInfoFragment extends Fragment {
     }
 
     private void setToolBar(View rootView) {
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         toolbar.setContentInsetsRelative(0, 0);
         toolbar.addView(LayoutInflater.from(getContext()).inflate(R.layout.contact_info_menu, null, false),
                 new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -86,7 +98,7 @@ public class ContactInfoFragment extends Fragment {
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO:编辑联系人信息
+                editContactInfo();
             }
         });
         ImageButton more = (ImageButton) rootView.findViewById(R.id.more);
@@ -100,16 +112,16 @@ public class ContactInfoFragment extends Fragment {
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
                             case R.id.share_contact:
-                                //TODO:分享联系人
+                                shareContact();
                                 break;
                             case R.id.add_white_list:
-                                //TODO:加入白名单
+                                addWhiteList();
                                 break;
                             case R.id.delete_record:
-                                //TODO:擦除联系痕迹
+                                deleteRecord();
                                 break;
                             case R.id.delete_contact:
-                                //TODO:删除联系人
+                                deleteContact();
                                 break;
                         }
                         return false;
@@ -120,4 +132,65 @@ public class ContactInfoFragment extends Fragment {
         });
     }
 
+    private void editContactInfo() {
+        //TODO:编辑联系人信息
+    }
+
+    private void addWhiteList() {
+        //加入白名单
+        ContentValues values = new ContentValues();
+        values.put("whitelist", 1);
+        resolver.update(contactUri, values, "name = ?", new String[]{name});
+        Toast.makeText(getContext(), "已加入白名单", Toast.LENGTH_SHORT).show();
+    }
+
+    private void deleteRecord() {
+        //擦除联系痕迹
+        RelativeLayout form = new RelativeLayout(getContext());
+        TextView textView = new TextView(getContext());
+        textView.setText("是否擦除所有联系痕迹？");
+        textView.setTextSize(18);
+        textView.setPadding(30, 40, 0, 0);
+        textView.setTextColor(Color.BLACK);
+        form.addView(textView);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        alertDialog = builder.setView(form)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int j) {
+                        resolver.delete(callRecordUri, "name = ?", new String[]{name});
+                    }
+                }).create();
+        alertDialog.show();
+    }
+
+    private void deleteContact() {
+        //删除联系人
+        RelativeLayout form = new RelativeLayout(getContext());
+        TextView textView = new TextView(getContext());
+        textView.setText("是否删除此联系人？");
+        textView.setTextSize(18);
+        textView.setPadding(30, 40, 0, 0);
+        textView.setTextColor(Color.BLACK);
+        form.addView(textView);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        alertDialog = builder.setView(form)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int j) {
+                        resolver.delete(contactUri, "name = ?", new String[]{name});
+                        ContentValues values = new ContentValues();
+                        values.put("name", "");
+                        resolver.update(callRecordUri, values, "name = ?", new String[]{name});
+                        getActivity().finish();
+                    }
+                }).create();
+        alertDialog.show();
+    }
+
+    private void shareContact() {
+        //TODO:分享联系人
+    }
 }

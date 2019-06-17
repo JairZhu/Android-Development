@@ -81,11 +81,14 @@ public class MainActivity extends AppCompatActivity {
     private Comparator<Contact> comparator = new Comparator<Contact>() {
         @Override
         public int compare(Contact contact, Contact t1) {
-            if (contact.getIndex().equals("#"))
+            if (contact.getIndex().equals("#") && !t1.getIndex().equals("#"))
                 return 1;
-            else if (t1.getIndex().equals("#"))
+            else if (t1.getIndex().equals("#") && !contact.getIndex().equals("#"))
                 return -1;
             else if (contact.getIndex().compareTo(t1.getIndex()) < 0)
+                return -1;
+            else if (contact.getIndex().compareTo(t1.getIndex()) == 0
+                    && contact.getName().compareTo(t1.getName()) < 0)
                 return -1;
             else
                 return 1;
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         actionBar = (ActionBar) getSupportActionBar();
         actionBar.setTitle("拨号");
         setContactViewVisible(View.GONE);
-        diplayCallRecord();
+        displayCallRecord();
         getPermission();
     }
 
@@ -334,6 +337,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, AddContactActivity.class);
+                intent.putExtra("number", "");
                 startActivity(intent);
             }
         });
@@ -374,8 +378,12 @@ public class MainActivity extends AppCompatActivity {
         record_list.clear();
         while (cursor != null && cursor.moveToNext()) {
             Map<String, Object> map = new HashMap<>();
+            String name = cursor.getString(cursor.getColumnIndex("name"));
+            if (name == null || name.isEmpty())
+                map.put("name", cursor.getString(cursor.getColumnIndex("number")));
+            else
+                map.put("name", name);
             map.put("number", cursor.getString(cursor.getColumnIndex("number")));
-            map.put("name", cursor.getString(cursor.getColumnIndex("name")));
             map.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
             map.put("calltime", cursor.getString(cursor.getColumnIndex("calltime")));
             map.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
@@ -387,6 +395,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deleteCallRecord(int position) {
+        //删除通话记录
         resolver.delete(callRecordUri, "calltime = ? and number = ?",
                 new String[]{record_list.get(position).get("calltime").toString(),
                         record_list.get(position).get("number").toString()});
@@ -394,14 +403,18 @@ public class MainActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    private void diplayCallRecord() {
+    private void displayCallRecord() {
         record_listview = (ListView) findViewById(R.id.dial_listview);
         Cursor cursor = resolver.query(callRecordUri, new String[]{"number", "name", "attribution",
                 "calltime", "duration", "status"}, null, null, null);
         while (cursor != null && cursor.moveToNext()) {
             Map<String, Object> map = new HashMap<>();
+            String name = cursor.getString(cursor.getColumnIndex("name"));
+            if (name == null || name.isEmpty())
+                map.put("name", cursor.getString(cursor.getColumnIndex("number")));
+            else
+                map.put("name", name);
             map.put("number", cursor.getString(cursor.getColumnIndex("number")));
-            map.put("name", cursor.getString(cursor.getColumnIndex("name")));
             map.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
             map.put("calltime", cursor.getString(cursor.getColumnIndex("calltime")));
             map.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
@@ -410,8 +423,8 @@ public class MainActivity extends AppCompatActivity {
         }
         Collections.sort(record_list, recordComparator);
         adapter = new SimpleAdapter(this, record_list, R.layout.dial_listview_item,
-                new String[]{"number", "name", "attribution", "calltime", "status", "duration"},
-                new int[]{R.id.phone_number, R.id.person_name, R.id.attribution, R.id.time, R.id.call_status, R.id.duration});
+                new String[]{"name", "attribution", "calltime", "status", "duration"},
+                new int[]{R.id.person_name, R.id.attribution, R.id.time, R.id.call_status, R.id.duration});
         record_listview.setAdapter(adapter);
         record_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -432,23 +445,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int i, long l) {
                 PopupMenu popupMenu = new PopupMenu(MainActivity.this, view);
-                if (record_list.get(i).get("name") == null || record_list.get(i).get("name").toString().isEmpty()) {
+                if (!inContactList(record_list.get(i).get("number").toString())) {
                     popupMenu.getMenuInflater().inflate(R.menu.record_long_click_menu1, popupMenu.getMenu());
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
                             switch (menuItem.getItemId()) {
-                                case R.id.add_white_list:
-                                    //TODO:将该号码加入白名单
-                                    break;
                                 case R.id.delete_record:
                                     deleteCallRecord(i);
                                     break;
                                 case R.id.add_new_contact:
-                                    //TODO:新增联系人
+                                    addNewContact(i);
                                     break;
                                 case R.id.store_contact:
-                                    //TODO:保存至已有联系人
+                                    storeContact(i);
                                     break;
                             }
                             return true;
@@ -461,7 +471,7 @@ public class MainActivity extends AppCompatActivity {
                         public boolean onMenuItemClick(MenuItem menuItem) {
                             switch (menuItem.getItemId()) {
                                 case R.id.add_white_list:
-                                    //TODO:加入白名单
+                                    addWhiteList(i);
                                     break;
                                 case R.id.delete_record:
                                     deleteCallRecord(i);
@@ -475,5 +485,34 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private boolean inContactList(String number) {
+        Cursor cursor = resolver.query(contactUri, new String[]{"number"}, null, null, null);
+        while (cursor != null && cursor.moveToNext()) {
+            if (number.equals(cursor.getString(cursor.getColumnIndex("number"))))
+                return true;
+        }
+        return false;
+    }
+
+    private void addWhiteList(int i) {
+        //加入白名单
+        ContentValues values = new ContentValues();
+        values.put("whitelist", 1);
+        resolver.update(contactUri, values, "name = ?", new String[]{record_list.get(i).get("name").toString()});
+        Toast.makeText(this, "已加入白名单", Toast.LENGTH_SHORT).show();
+    }
+
+    private void addNewContact(int i) {
+        //新建联系人
+        Intent intent = new  Intent(MainActivity.this, AddContactActivity.class);
+        intent.putExtra("number", record_list.get(i).get("number").toString());
+        startActivity(intent);
+    }
+
+    private void storeContact(int i) {
+        //TODO:保存至已有联系人
+
     }
 }

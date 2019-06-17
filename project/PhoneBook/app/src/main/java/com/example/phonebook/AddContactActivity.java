@@ -19,10 +19,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class AddContactActivity extends AppCompatActivity {
     private Uri uri = Uri.parse("content://com.example.providers.ContactDB/");
+    private Uri callRecordUri = Uri.parse("content://com.example.providers.RecordDB/");
     private EditText newname, newnumber, newbirthday;
     private ImageButton newConactImage;
     private CheckBox newwhitelist;
@@ -56,6 +59,8 @@ public class AddContactActivity extends AppCompatActivity {
                 showDatePickerDialog();
             }
         });
+        Intent intent = getIntent();
+        newnumber.setText(intent.getStringExtra("number"));
     }
 
     private void showDatePickerDialog() {
@@ -82,41 +87,53 @@ public class AddContactActivity extends AppCompatActivity {
                 this.finish();
                 break;
             case R.id.check:
+                String number = newnumber.getText().toString();
+                Cursor cur= resolver.query(uri, new String[]{"number"}, null, null, null);
+                while (cur != null && cur.moveToNext())
+                    if (number.equals(cur.getString(cur.getColumnIndex("number"))))
+                        this.finish();
                 if (checkInfo()) {
                     ContentValues contentValues = new ContentValues();
-                    contentValues.put("name", newname.getText().toString());
-                    contentValues.put("number", newnumber.getText().toString());
-                    contentValues.put("attribution", new QueryAttribution(newnumber.getText().toString()).getAttribution());
+                    String name = newname.getText().toString();
+                    if (name.isEmpty())
+                        name = number;
+                    contentValues.put("name", name);
+                    contentValues.put("number", number);
+                    contentValues.put("attribution", new QueryAttribution(number).getAttribution());
                     Cursor cursor = resolver.query(uri, new String[]{"birthday"}, "name = ?",
-                            new String[]{newname.getText().toString()}, null);
-                    if (cursor != null && cursor.moveToNext()) {
-                        String birthday = cursor.getString(cursor.getColumnIndex("birthday"));
-                        if (birthday != null && birthday.length() > 0)
-                            contentValues.put("birthday", birthday);
-                        else
-                            contentValues.put("birthday", newbirthday.getText().toString());
-                    } else
-                        contentValues.put("birthday", newbirthday.getText().toString());
+                            new String[]{name}, null);
+                    contentValues.put("birthday", newbirthday.getText().toString());
+                    while (cursor != null && cursor.moveToNext()) {
+                        String day = cursor.getString(cursor.getColumnIndex("birthday"));
+                        if (!day.isEmpty()) {
+                            contentValues.put("birthday", day);
+                            ContentValues values = new ContentValues();
+                            values.put("birthday", day);
+                            resolver.update(uri, values, "name = ?", new String[]{name});
+                            break;
+                        }
+                    }
                     if (newwhitelist.isChecked())
                         contentValues.put("whitelist", 1);
                     else
                         contentValues.put("whitelist", 0);
                     resolver.insert(uri, contentValues);
+                    ContentValues values = new ContentValues();
+                    values.put("name", name);
+                    resolver.update(callRecordUri, values, "number = ?", new String[]{number});
                     this.finish();
                 }
                 else
-                    Toast.makeText(this, "请将信息填写完整！", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "请输入电话号码！", Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;
     }
 
     private boolean checkInfo() {
-        if (newname.getText() != null && newname.getText().toString().length() > 0
-            && newnumber.getText() != null && newnumber.getText().toString().length() > 0
-            && newbirthday.getText() != null && newbirthday.getText().toString().length() > 0)
-            return true;
-        else
+        if (newnumber.getText() == null || newnumber.getText().toString().isEmpty())
             return false;
+        else
+            return true;
     }
 }

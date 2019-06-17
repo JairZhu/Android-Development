@@ -38,11 +38,15 @@ public class Contact {
     }
     public void setName(String name) {
         this.name = name;
-        String key = name.substring(0, 1).toUpperCase();
-        if (key.matches("[A-Z]"))
-            sortkey = key;
-        else
+        if (name.isEmpty())
             sortkey = "#";
+        else {
+            String key = name.substring(0, 1);
+            if (key.matches("[A-Z]") || key.matches("[a-z]"))
+                sortkey = key.toUpperCase();
+            else
+                sortkey = "#";
+        }
     }
     public void setBirthday(String birthday) {
         this.birthday = birthday;

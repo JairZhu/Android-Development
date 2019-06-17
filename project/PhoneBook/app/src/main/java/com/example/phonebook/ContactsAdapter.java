@@ -53,7 +53,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
         if (position == 0 || !contacts.get(position-1).getIndex().equals(contact.getIndex())) {
             holder.tvIndex.setVisibility(View.VISIBLE);
             holder.tvIndex.setText(contact.getIndex());
-        } else {
+        }
+        else {
             holder.tvIndex.setVisibility(View.GONE);
         }
         holder.tvName.setText(contact.getName());

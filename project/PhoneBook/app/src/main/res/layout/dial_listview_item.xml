@@ -16,16 +16,8 @@
         android:text="联系人"
         android:textColor="@color/black"
         android:textSize="18sp"
-        android:layout_margin="5dp"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/person_name"
-        android:id="@+id/phone_number"
-        android:text="12345678901"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        android:layout_margin="5dp"/>
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

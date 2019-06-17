@@ -4,9 +4,6 @@
         android:id="@+id/delete_record"
         android:title="删除通话记录"/>
     <item
-        android:id="@+id/add_white_list"
-        android:title="加入白名单"/>
-    <item
         android:id="@+id/add_new_contact"
         android:title="新建联系人"/>
     <item
