@@ -53,7 +53,7 @@ public class ContactInfoActivity extends AppCompatActivity {
                 this.finish();
                 break;
             case R.id.qr_code:
-                //TODO:分享联系人
+                //TODO:分享联系人（二维码）
                 break;
         }
         return true;

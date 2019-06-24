@@ -38,7 +38,7 @@ public class Contact {
     }
     public void setName(String name) {
         this.name = name;
-        if (name.isEmpty())
+        if (name == null || name.isEmpty())
             sortkey = "#";
         else {
             String key = name.substring(0, 1);

@@ -24,6 +24,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         resolver = getContentResolver();
         makePhoneCall = new MakePhoneCall(this, resolver);
+//        getApplicationContext().deleteDatabase("contacts");
 //        getApplicationContext().deleteDatabase("records");
         initialNavigation();
         initialFloatingActionButton();
@@ -120,6 +122,50 @@ public class MainActivity extends AppCompatActivity {
         setContactViewVisible(View.GONE);
         displayCallRecord();
         getPermission();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.mainactivity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_qr_contact:
+                //TODO:扫描二维码添加联系人
+                break;
+            case R.id.no_disturb:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    //TODO:关闭免打扰
+                }
+                else {
+                    item.setChecked(true);
+                    //TODO:开启免打扰
+                }
+                break;
+            case R.id.remind:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    //TODO:关闭温馨提示
+                }
+                else {
+                    item.setChecked(true);
+                    //TODO:开启温馨提示
+                }
+        }
+        return true;
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        updateContactListView();
+        Cursor cursor = resolver.query(callRecordUri, new String[]{"number", "name", "attribution",
+                "calltime", "duration", "status"}, null, null, null);
+        updateRecordListView(cursor);
     }
 
     private void getPermission() {
@@ -343,15 +389,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        updateContactListView();
-        Cursor cursor = resolver.query(callRecordUri, new String[]{"number", "name", "attribution",
-                "calltime", "duration", "status"}, null, null, null);
-        updateRecordListView(cursor);
-    }
-
     public void initialNavigation() {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -460,6 +497,9 @@ public class MainActivity extends AppCompatActivity {
                                 case R.id.store_contact:
                                     storeContact(i);
                                     break;
+                                case R.id.add_white_list:
+                                    addWhiteList(i);
+                                    break;
                             }
                             return true;
                         }
@@ -498,9 +538,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void addWhiteList(int i) {
         //加入白名单
-        ContentValues values = new ContentValues();
-        values.put("whitelist", 1);
-        resolver.update(contactUri, values, "name = ?", new String[]{record_list.get(i).get("name").toString()});
+        String number = record_list.get(i).get("number").toString();
+        Cursor cursor = resolver.query(contactUri, new String[]{"number", "name"}, "number = ?", new String[]{number}, null);
+        if (cursor != null && cursor.moveToNext()) {
+            ContentValues values = new ContentValues();
+            values.put("whitelist", 1);
+            resolver.update(contactUri, values, "number = ?", new String[]{number});
+        }
+        else {
+            ContentValues values = new ContentValues();
+            values.put("name", number);
+            values.put("number", number);
+            values.put("attribution", new QueryAttribution(number).getAttribution());
+            values.put("whitelist", 1);
+            resolver.insert(contactUri, values);
+        }
         Toast.makeText(this, "已加入白名单", Toast.LENGTH_SHORT).show();
     }
 

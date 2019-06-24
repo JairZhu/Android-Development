@@ -191,6 +191,6 @@ public class ContactInfoFragment extends Fragment {
     }
 
     private void shareContact() {
-        //TODO:分享联系人
+        //TODO:分享联系人（二维码）
     }
 }

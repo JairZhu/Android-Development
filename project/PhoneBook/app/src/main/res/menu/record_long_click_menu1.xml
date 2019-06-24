@@ -9,4 +9,7 @@
     <item
         android:id="@+id/store_contact"
         android:title="保存至已有联系人"/>
+    <item
+        android:id="@+id/add_white_list"
+        android:title="加入白名单" />
 </menu>
