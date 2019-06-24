@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/add_qr_contact"
+        android:title="扫码添加联系人"
+        android:icon="@drawable/ic_add_black_24dp"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/no_disturb"
+        android:title="免打扰"
+        android:checkable="true"
+        android:checked="false"
+        android:orderInCategory="0"/>
+    <item
+        android:id="@+id/remind"
+        android:title="温馨提示"
+        android:checkable="true"
+        android:checked="false"
+        android:orderInCategory="1"/>
+</menu>
