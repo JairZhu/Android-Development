@@ -1,6 +1,9 @@
 package com.example.phonebook;
 
 import android.app.DatePickerDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
@@ -21,6 +25,8 @@ import java.util.Calendar;
 import java.util.Map;
 
 public class EditContactInfoActivity extends AppCompatActivity {
+    private Uri contactUri = Uri.parse("content://com.example.providers.ContactDB/");
+    private Uri callRecordUri = Uri.parse("content://com.example.providers.RecordDB/");
     private EditText newbirthday, newname;
     private TableLayout tableLayout;
     private ArrayList<Map<String, Object>> lists;
@@ -99,7 +105,7 @@ public class EditContactInfoActivity extends AppCompatActivity {
             case android.R.id.home:
                 this.finish();
                 break;
-            case R.id.add_new_contact:
+            case R.id.check:
                 changeInformation();
                 this.finish();
                 break;
@@ -108,7 +114,51 @@ public class EditContactInfoActivity extends AppCompatActivity {
     }
 
     private void changeInformation() {
-        
+        ContentResolver resolver = getContentResolver();
+        String name = newname.getText().toString();
+        String birthday = newbirthday.getText().toString();
+        for (int i = 0; i < lists.size(); ++i) {
+            String number = lists.get(i).get("number").toString();
+            resolver.delete(contactUri, "number = ?", new String[]{number});
+            ContentValues values = new ContentValues();
+            values.put("name", number);
+            resolver.update(callRecordUri, values, "number = ?", new String[]{number});
+        }
+        int count = tableLayout.getChildCount();
+        if (name.isEmpty() && (count <= 3 || checkNull())) {
+            Toast.makeText(this, "联系人已删除", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        for (int i = 3; i < count; ++i) {
+            TableRow row = (TableRow) tableLayout.getChildAt(i);
+            EditText newnumber = (EditText) row.getChildAt(1);
+            String number = newnumber.getText().toString();
+            if (number.isEmpty())
+                continue;
+            String tmpName = name;
+            if (tmpName.isEmpty())
+                tmpName = number;
+            ContentValues values = new ContentValues();
+            values.put("name", tmpName);
+            values.put("birthday", birthday);
+            values.put("number", number);
+            values.put("attribution", new QueryAttribution(number).getAttribution());
+            resolver.insert(contactUri, values);
+            values.clear();
+            values.put("name", tmpName);
+            resolver.update(callRecordUri, values, "number = ?", new String[]{number});
+        }
+    }
+
+    private boolean checkNull() {
+        for (int i = 3; i < tableLayout.getChildCount(); ++i) {
+            TableRow row = (TableRow) tableLayout.getChildAt(i);
+            EditText newnumber = (EditText) row.getChildAt(1);
+            String number = newnumber.getText().toString();
+            if (!number.isEmpty())
+                return false;
+        }
+        return true;
     }
 
     private void showDatePickerDialog() {
