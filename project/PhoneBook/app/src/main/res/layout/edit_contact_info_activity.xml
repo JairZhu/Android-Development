@@ -56,20 +56,18 @@
             <TextView
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="0.2"
-                android:text="号码"
+                android:layout_weight="0.9"
+                android:text="添加号码"
+                android:layout_gravity="center_vertical"
                 android:textColor="@color/black"
                 android:textSize="18sp"/>
-            <EditText
-                android:id="@+id/new_number"
+            <ImageButton
+                android:id="@+id/add_button"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="0.8"
-                android:maxLength="11"
-                android:hint="请填写电话号码"
-                android:padding="10dp"
-                android:inputType="numberDecimal"
-                android:background="@drawable/edit_border"/>
+                android:layout_weight="0.1"
+                android:gravity="center"
+                android:src="@drawable/ic_add_black_24dp"/>
         </TableRow>
     </TableLayout>
 </RelativeLayout>

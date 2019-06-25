@@ -5,12 +5,16 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
+import android.widget.TableRow;
+
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,7 +22,8 @@ import java.util.Map;
 
 public class EditContactInfoActivity extends AppCompatActivity {
     private EditText newbirthday, newname;
-    TableLayout tableLayout;
+    private TableLayout tableLayout;
+    private ArrayList<Map<String, Object>> lists;
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -29,7 +34,7 @@ public class EditContactInfoActivity extends AppCompatActivity {
         actionBar.setTitle("编辑联系人");
         Bundle bundle = getIntent().getExtras();
         String name = bundle.getString("name"), birthday = bundle.getString("birthday");
-        ArrayList<Map<String, Object>> lists = (ArrayList<Map<String, Object>>) bundle.getSerializable("numberList");
+        lists = (ArrayList<Map<String, Object>>) bundle.getSerializable("numberList");
         tableLayout = (TableLayout) findViewById(R.id.new_contact_tablelayout);
         newname = (EditText) findViewById(R.id.new_name);
         newbirthday = (EditText) findViewById(R.id.new_birthday);
@@ -50,12 +55,44 @@ public class EditContactInfoActivity extends AppCompatActivity {
                 showDatePickerDialog();
             }
         });
+        ImageButton ibutton = (ImageButton) findViewById(R.id.add_button);
+        ibutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TableRow tableRow = (TableRow) LayoutInflater.from(EditContactInfoActivity.this).inflate(R.layout.single_number_row, null);
+                ImageButton imageButton = (ImageButton) tableRow.findViewById(R.id.delete_button);
+                imageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        TableRow row = (TableRow) view.getParent();
+                        tableLayout.removeView(row);
+                    }
+                });
+                tableLayout.addView(tableRow);
+            }
+        });
+        for (int i = 0; i < lists.size(); ++i) {
+            TableRow tableRow = (TableRow) LayoutInflater.from(this).inflate(R.layout.single_number_row, null);
+            EditText newnumber = (EditText) tableRow.findViewById(R.id.new_number);
+            newnumber.setText(lists.get(i).get("number").toString());
+            ImageButton imageButton = (ImageButton) tableRow.findViewById(R.id.delete_button);
+            imageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    TableRow row = (TableRow) view.getParent();
+                    tableLayout.removeView(row);
+                }
+            });
+            tableLayout.addView(tableRow);
+        }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_add_contact, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -63,11 +100,17 @@ public class EditContactInfoActivity extends AppCompatActivity {
                 this.finish();
                 break;
             case R.id.add_new_contact:
+                changeInformation();
                 this.finish();
                 break;
         }
         return true;
     }
+
+    private void changeInformation() {
+        
+    }
+
     private void showDatePickerDialog() {
         Calendar c = Calendar.getInstance();
         new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {

@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
     private void getPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.CALL_PHONE}, 1);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 1);
         }
     }
 
