@@ -17,6 +17,7 @@ import android.widget.Toast;
 import java.util.List;
 
 public class StoreContactAdapter extends RecyclerView.Adapter<StoreContactAdapter.ContactsViewHolder>  {
+    private Uri callRecordUri = Uri.parse("content://com.example.providers.RecordDB/");
     private Uri contactUri = Uri.parse("content://com.example.providers.ContactDB/");
     private List<Contact> contacts;
     private int layoutId;
@@ -48,12 +49,16 @@ public class StoreContactAdapter extends RecyclerView.Adapter<StoreContactAdapte
                     if (birthday != null && !birthday.isEmpty())
                         break;
                 }
+                cursor.close();
                 ContentValues values = new ContentValues();
                 values.put("number", number);
                 values.put("name", name);
                 values.put("attribution", attribution);
                 values.put("birthday", birthday);
                 resolver.insert(contactUri, values);
+                values.clear();
+                values.put("name", name);
+                resolver.update(callRecordUri, values, "number = ?", new String[]{number});
                 Toast.makeText(context, "保存成功！", Toast.LENGTH_SHORT).show();
                 ((Activity)context).finish();
             }

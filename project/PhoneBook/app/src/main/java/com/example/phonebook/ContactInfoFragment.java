@@ -123,7 +123,7 @@ public class ContactInfoFragment extends Fragment {
     }
 
     private void editContactInfo() {
-        //TODO:编辑联系人信息
+        //编辑联系人信息
         Intent intent = new Intent(getContext(), EditContactInfoActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("name", name);
@@ -138,6 +138,7 @@ public class ContactInfoFragment extends Fragment {
         bundle.putSerializable("numberList", lists);
         intent.putExtras(bundle);
         getContext().startActivity(intent);
+        getActivity().finish();
     }
 
     private void addWhiteList() {
