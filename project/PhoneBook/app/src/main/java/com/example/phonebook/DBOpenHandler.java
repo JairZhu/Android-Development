@@ -15,6 +15,7 @@ public class DBOpenHandler extends SQLiteOpenHelper {
         db.execSQL("create table records(id int primary key, number varchar(11), name varchar(50)," +
                 "attribution varchar(50), status int, calltime datetime, duration time)");
     }
+    //status(通话状态): 0-呼入，1-呼出，2-未接听
     @Override
     public void onUpgrade(SQLiteDatabase db, int old, int newv) { db.execSQL("");}
 }

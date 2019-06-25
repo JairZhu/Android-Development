@@ -1,26 +1,18 @@
 package com.example.phonebook;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,9 +26,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -134,6 +124,20 @@ public class ContactInfoFragment extends Fragment {
 
     private void editContactInfo() {
         //TODO:编辑联系人信息
+        Intent intent = new Intent(getContext(), EditContactInfoActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("name", name);
+        String birthday = "";
+        Cursor cursor = resolver.query(contactUri, new String[]{"birthday"}, "name = ?", new String[]{name}, null);
+        while (cursor != null && cursor.moveToNext()) {
+            birthday = cursor.getString(cursor.getColumnIndex("birthday"));
+            if (birthday != null && !birthday.isEmpty())
+                break;
+        }
+        bundle.putString("birthday", birthday);
+        bundle.putSerializable("numberList", lists);
+        intent.putExtras(bundle);
+        getContext().startActivity(intent);
     }
 
     private void addWhiteList() {
@@ -191,6 +195,6 @@ public class ContactInfoFragment extends Fragment {
     }
 
     private void shareContact() {
-        //TODO:分享联系人
+        //TODO:分享联系人（二维码）
     }
 }

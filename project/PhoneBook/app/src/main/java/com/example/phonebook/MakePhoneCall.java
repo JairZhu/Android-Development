@@ -62,14 +62,11 @@ public class MakePhoneCall {
         }
         else
             contentValues.put("attribution", new QueryAttribution(phoneNumber).getAttribution());
-        //TODO:获取通话时间
-        //contentValues.put("duration", 0);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         String currentTime = simpleDateFormat.format(new Date(System.currentTimeMillis()));
         contentValues.put("calltime", currentTime);
+        //TODO:获取通话时间
+        //contentValues.put("duration", 0);
         resolver.insert(callRecordUri, contentValues);
-        cursor = resolver.query(callRecordUri, new String[]{"number", "name",
-                        "attribution", "calltime", "status", "duration"},
-                null, null, null);
     }
 }

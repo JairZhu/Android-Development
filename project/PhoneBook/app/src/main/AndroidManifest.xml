@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -28,6 +29,18 @@
         <activity android:name=".ContactInfoActivity">
             <intent-filter>
                 <action android:name="ContactInfo"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".StoreContactActivity">
+            <intent-filter>
+                <action android:name="StoreContact"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".EditContactInfoActivity">
+            <intent-filter>
+                <action android:name="EditContactInfo"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
