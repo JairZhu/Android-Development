@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         initialContactView();
         actionBar = (ActionBar) getSupportActionBar();
         actionBar.setTitle("拨号");
-        setContactViewVisible(View.GONE);
+         setContactViewVisible(View.GONE);
         displayCallRecord();
         getPermission();
         giveTips();
@@ -576,7 +576,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void storeContact(int i) {
         //TODO:保存至已有联系人
-
+        Bundle bundle = new Bundle();
+        bundle.putString("number", record_list.get(i).get("number").toString());
+        bundle.putString("attribution", record_list.get(i).get("attribution").toString());
+        Intent intent = new Intent(this, StoreContactActivity.class);
+        intent.putExtra("key", bundle);
+        startActivity(intent);
     }
 
     private void giveTips() {
@@ -610,6 +615,7 @@ public class MainActivity extends AppCompatActivity {
                         .setSmallIcon(R.drawable.festival_reminder)
                         .setContentText("今天是" + message)
                         .setTicker("节日提醒")
+                        .setAutoCancel(true)
                         .setWhen(System.currentTimeMillis())
                         .setPriority(Notification.PRIORITY_DEFAULT)
                         .setOngoing(false)
@@ -631,6 +637,7 @@ public class MainActivity extends AppCompatActivity {
                         .setSmallIcon(R.drawable.birthdy_reminder)
                         .setContentText("今天是" + names.get(i) + "的生日")
                         .setTicker("生日提醒")
+                        .setAutoCancel(true)
                         .setWhen(System.currentTimeMillis())
                         .setPriority(Notification.PRIORITY_DEFAULT)
                         .setOngoing(false)
