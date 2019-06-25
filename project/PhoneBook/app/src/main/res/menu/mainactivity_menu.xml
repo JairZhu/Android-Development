@@ -16,6 +16,6 @@
         android:id="@+id/remind"
         android:title="温馨提示"
         android:checkable="true"
-        android:checked="false"
+        android:checked="true"
         android:orderInCategory="1"/>
 </menu>

@@ -1,6 +1,10 @@
 package com.example.phonebook;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.graphics.Color;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
 import android.app.DatePickerDialog;
 import android.content.ContentResolver;
@@ -24,6 +28,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -49,6 +54,7 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -66,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private Uri callRecordUri = Uri.parse("content://com.example.providers.RecordDB/");
     private Uri contactUri = Uri.parse("content://com.example.providers.ContactDB/");
     private int[] images = {R.drawable.callin, R.drawable.callout, R.drawable.missed};
+    private boolean reminder = true;
     private ContentResolver resolver;
     private ActionBar actionBar;
     private ListView record_listview;
@@ -122,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         setContactViewVisible(View.GONE);
         displayCallRecord();
         getPermission();
+        giveTips();
     }
 
     @Override
@@ -148,12 +156,15 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.remind:
                 if (item.isChecked()) {
+                    //关闭温馨提示
                     item.setChecked(false);
-                    //TODO:关闭温馨提示
+                    reminder = false;
                 }
                 else {
+                    //开启温馨提示
                     item.setChecked(true);
-                    //TODO:开启温馨提示
+                    reminder = true;
+                    giveTips();
                 }
         }
         return true;
@@ -566,5 +577,96 @@ public class MainActivity extends AppCompatActivity {
     private void storeContact(int i) {
         //TODO:保存至已有联系人
 
+    }
+
+    private void giveTips() {
+        //温馨提示
+        if (reminder) {
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH) + 1;
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            String message = "";
+            if (month == 1 && day == 1)
+                message = "春节";
+            else if (month == 1 && day == 15)
+                message = "元宵";
+            else if (month == 5 && day == 5)
+                message = "端午";
+            else if (month == 7 && day == 7)
+                message = "七夕";
+            else if (month == 8 && day == 15)
+                message = "中秋";
+            else if (month == 9 && day == 9)
+                message = "重阳";
+            else if (month == 12 && day == 8)
+                message = "腊八";
+            else if (month == 12 && monthDays(year, month) == day)
+                message = "除夕";
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            if (!message.isEmpty()) {
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+                Notification notification = builder.setContentTitle("节日提醒")
+                        .setSmallIcon(R.drawable.festival_reminder)
+                        .setContentText("今天是" + message)
+                        .setTicker("节日提醒")
+                        .setWhen(System.currentTimeMillis())
+                        .setPriority(Notification.PRIORITY_DEFAULT)
+                        .setOngoing(false)
+                        .setDefaults(Notification.DEFAULT_VIBRATE).build();
+                notificationManager.notify(0, notification);
+            }
+            Cursor cursor = resolver.query(contactUri, new String[]{"name", "number"}, "birthday like ?",
+                    new String[]{"%" + month + "-" + day}, null);
+            ArrayList<String> names = new ArrayList<>();
+            while (cursor != null && cursor.moveToNext()) {
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                String number = cursor.getString(cursor.getColumnIndex("number"));
+                if (!name.equals(number))
+                    names.add(name);
+            }
+            for (int i = 0; i < names.size(); ++i) {
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+                Notification notification = builder.setContentTitle("生日提醒")
+                        .setSmallIcon(R.drawable.birthdy_reminder)
+                        .setContentText("今天是" + names.get(i) + "的生日")
+                        .setTicker("生日提醒")
+                        .setWhen(System.currentTimeMillis())
+                        .setPriority(Notification.PRIORITY_DEFAULT)
+                        .setOngoing(false)
+                        .setDefaults(Notification.DEFAULT_VIBRATE).build();
+                notificationManager.notify(i + 1, notification);
+            }
+        }
+    }
+
+    private int monthDays(int year, int month) {
+        final long[] LUNAR_INFO = new long[]{0x04bd8, 0x04ae0,
+                    0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554, 0x056a0, 0x09ad0,
+                    0x055d2, 0x04ae0, 0x0a5b6, 0x0a4d0, 0x0d250, 0x1d255, 0x0b540,
+                    0x0d6a0, 0x0ada2, 0x095b0, 0x14977, 0x04970, 0x0a4b0, 0x0b4b5,
+                    0x06a50, 0x06d40, 0x1ab54, 0x02b60, 0x09570, 0x052f2, 0x04970,
+                    0x06566, 0x0d4a0, 0x0ea50, 0x06e95, 0x05ad0, 0x02b60, 0x186e3,
+                    0x092e0, 0x1c8d7, 0x0c950, 0x0d4a0, 0x1d8a6, 0x0b550, 0x056a0,
+                    0x1a5b4, 0x025d0, 0x092d0, 0x0d2b2, 0x0a950, 0x0b557, 0x06ca0,
+                    0x0b550, 0x15355, 0x04da0, 0x0a5d0, 0x14573, 0x052d0, 0x0a9a8,
+                    0x0e950, 0x06aa0, 0x0aea6, 0x0ab50, 0x04b60, 0x0aae4, 0x0a570,
+                    0x05260, 0x0f263, 0x0d950, 0x05b57, 0x056a0, 0x096d0, 0x04dd5,
+                    0x04ad0, 0x0a4d0, 0x0d4d4, 0x0d250, 0x0d558, 0x0b540, 0x0b5a0,
+                    0x195a6, 0x095b0, 0x049b0, 0x0a974, 0x0a4b0, 0x0b27a, 0x06a50,
+                    0x06d40, 0x0af46, 0x0ab60, 0x09570, 0x04af5, 0x04970, 0x064b0,
+                    0x074a3, 0x0ea50, 0x06b58, 0x055c0, 0x0ab60, 0x096d5, 0x092e0,
+                    0x0c960, 0x0d954, 0x0d4a0, 0x0da50, 0x07552, 0x056a0, 0x0abb7,
+                    0x025d0, 0x092d0, 0x0cab5, 0x0a950, 0x0b4a0, 0x0baa4, 0x0ad50,
+                    0x055d9, 0x04ba0, 0x0a5b0, 0x15176, 0x052b0, 0x0a930, 0x07954,
+                    0x06aa0, 0x0ad50, 0x05b52, 0x04b60, 0x0a6e6, 0x0a4e0, 0x0d260,
+                    0x0ea65, 0x0d530, 0x05aa0, 0x076a3, 0x096d0, 0x04bd7, 0x04ad0,
+                    0x0a4d0, 0x1d0b6, 0x0d250, 0x0d520, 0x0dd45, 0x0b5a0, 0x056d0,
+                    0x055b2, 0x049b0, 0x0a577, 0x0a4b0, 0x0aa50, 0x1b255, 0x06d20,
+                    0x0ada0};
+        if ((LUNAR_INFO[year - 1900] & (0x10000 >> month)) == 0)
+            return 29;
+        else
+            return 30;
     }
 }

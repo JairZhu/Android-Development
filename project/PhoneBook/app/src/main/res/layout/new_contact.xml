@@ -51,6 +51,7 @@
                 android:maxLength="11"
                 android:hint="请填写电话号码"
                 android:padding="10dp"
+                android:inputType="numberDecimal"
                 android:background="@drawable/edit_border"/>
         </TableRow>
         <TableRow android:paddingBottom="10dp">
