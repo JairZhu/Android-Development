@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/new_contact_image"
+        android:layout_centerHorizontal="true"
+        android:background="@color/white"
+        android:src="@drawable/ic_account_box_black_24dp"/>
+    <TableLayout
+        android:id="@+id/new_contact_tablelayout"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_below="@id/new_contact_image"
+        android:padding="10dp">
+        <TableRow android:paddingBottom="10dp">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:text="姓名"
+                android:textColor="@color/black"
+                android:textSize="18sp"/>
+            <EditText
+                android:id="@+id/new_name"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:hint="请填写联系人姓名"
+                android:padding="10dp"
+                android:background="@drawable/edit_border"/>
+        </TableRow>
+        <TableRow android:paddingBottom="10dp">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:text="生日"
+                android:textColor="@color/black"
+                android:textSize="18sp"/>
+            <EditText
+                android:id="@+id/new_birthday"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:inputType="none"
+                android:hint="请选择日期"
+                android:padding="10dp"
+                android:background="@drawable/edit_border"/>
+        </TableRow>
+        <TableRow android:paddingBottom="10dp">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:text="号码"
+                android:textColor="@color/black"
+                android:textSize="18sp"/>
+            <EditText
+                android:id="@+id/new_number"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:maxLength="11"
+                android:hint="请填写电话号码"
+                android:padding="10dp"
+                android:inputType="numberDecimal"
+                android:background="@drawable/edit_border"/>
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>

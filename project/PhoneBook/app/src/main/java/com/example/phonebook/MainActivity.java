@@ -575,7 +575,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void storeContact(int i) {
-        //TODO:保存至已有联系人
+        //保存至已有联系人
         Bundle bundle = new Bundle();
         bundle.putString("number", record_list.get(i).get("number").toString());
         bundle.putString("attribution", record_list.get(i).get("attribution").toString());
