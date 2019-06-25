@@ -136,8 +136,8 @@ public class ContactInfoFragment extends Fragment {
         }
         bundle.putString("birthday", birthday);
         bundle.putSerializable("numberList", lists);
-        intent.putExtra("key", bundle);
-        startActivity(intent);
+        intent.putExtras(bundle);
+        getContext().startActivity(intent);
     }
 
     private void addWhiteList() {
