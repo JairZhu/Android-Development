@@ -7,6 +7,12 @@
         android:icon="@drawable/ic_add_black_24dp"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/search_button"
+        android:title="搜索联系人"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/no_disturb"
         android:title="免打扰"
         android:checkable="true"

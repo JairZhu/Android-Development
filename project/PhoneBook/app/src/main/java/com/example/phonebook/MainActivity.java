@@ -3,8 +3,10 @@ package com.example.phonebook;
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.SearchManager;
 import android.graphics.Color;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.app.DatePickerDialog;
 import android.content.ContentResolver;
@@ -47,6 +49,7 @@ import android.widget.PopupMenu;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.SimpleAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -86,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
     private WaveSideBar sideBar;
     private TextView textView;
     private MakePhoneCall makePhoneCall;
+    private SearchView searchView;
     private Comparator<Contact> comparator = new Comparator<Contact>() {
         @Override
         public int compare(Contact contact, Contact t1) {
@@ -133,14 +137,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onNewIntent(Intent intent){
+        //Get search query
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            updateContactListView(searchContect(query));
+        }
+        setIntent(intent);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.mainactivity_menu, menu);
+        searchView = (SearchView) menu.findItem(R.id.search_button).getActionView();
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                updateContactListView(searchContect(s));
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                updateContactListView(searchContect(s));
+                return false;
+            }
+        });
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.search_button:
+                onSearchRequested();
+                break;
             case R.id.add_qr_contact:
                 //TODO:扫描二维码添加联系人
                 break;
@@ -209,6 +243,13 @@ public class MainActivity extends AppCompatActivity {
         contactsAdapter.notifyDataSetChanged();
     }
 
+    private void updateContactListView(List<Contact> newList) {
+        contactList.clear();
+        contactList.addAll(newList);
+        Collections.sort(contactList, comparator);
+        contactsAdapter.notifyDataSetChanged();
+    }
+
     private void initialContactView() {
         Cursor cursor = resolver.query(contactUri, new String[]{"distinct name"},
                 null, null, null);
@@ -223,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
         contactsAdapter = new ContactsAdapter(this, contactList, R.layout.contact_listview_item);
         contacts_view.setAdapter(contactsAdapter);
         sideBar = (WaveSideBar) findViewById(R.id.side_bar);
+
         sideBar.setOnSelectIndexItemListener(new WaveSideBar.OnSelectIndexItemListener() {
             @Override
             public void onSelectIndexItem(String index) {
@@ -671,5 +713,17 @@ public class MainActivity extends AppCompatActivity {
             return 29;
         else
             return 30;
+    }
+    protected List<Contact> searchContect(String query){
+        List<Contact> result = new ArrayList<>();
+        String[] argList = {"%" + query + "%"};
+        Cursor cursor = resolver.query(contactUri, new String[]{"distinct name"},
+                "name like ?", argList, null);
+        while (cursor.moveToNext()) {
+            Contact contact = new Contact();
+            contact.setName(cursor.getString(cursor.getColumnIndex("name")));
+            result.add(contact);
+        }
+        return result;
     }
 }

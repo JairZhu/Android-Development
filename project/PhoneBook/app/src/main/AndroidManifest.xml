@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.phonebook">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,44 +16,55 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                       android:resource="@xml/searchable" />
         </activity>
         <activity android:name=".AddContactActivity">
             <intent-filter>
-                <action android:name="AddContact"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="AddContact" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".ContactInfoActivity">
             <intent-filter>
-                <action android:name="ContactInfo"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="ContactInfo" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".StoreContactActivity">
             <intent-filter>
-                <action android:name="StoreContact"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="StoreContact" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".EditContactInfoActivity">
             <intent-filter>
-                <action android:name="EditContactInfo"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="EditContactInfo" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <provider
-            android:authorities="com.example.providers.RecordDB"
             android:name=".RecordDB"
-            android:exported="true"/>
+            android:authorities="com.example.providers.RecordDB"
+            android:exported="true" />
         <provider
-            android:authorities="com.example.providers.ContactDB"
             android:name=".ContactDB"
-            android:exported="true"/>
+            android:authorities="com.example.providers.ContactDB"
+            android:exported="true" />
     </application>
 
 </manifest>
