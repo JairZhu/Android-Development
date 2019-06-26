@@ -28,9 +28,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -79,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private ContentResolver resolver;
     private ActionBar actionBar;
     private ListView record_listview;
+    private CustomPhoneStateListener myCall;
     private RecyclerView contacts_view;
     private SimpleAdapter adapter = null;
     private ContactsAdapter contactsAdapter;
@@ -100,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             else if (contact.getIndex().compareTo(t1.getIndex()) < 0)
                 return -1;
             else if (contact.getIndex().compareTo(t1.getIndex()) == 0
-                    && contact.getName().compareTo(t1.getName()) < 0)
+                    && contact.getPinyin().compareTo(t1.getPinyin()) < 0)
                 return -1;
             else
                 return 1;
@@ -122,8 +126,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         resolver = getContentResolver();
         makePhoneCall = new MakePhoneCall(this, resolver);
-//        getApplicationContext().deleteDatabase("contacts");
-//        getApplicationContext().deleteDatabase("records");
+        getApplicationContext().deleteDatabase("contacts");
+        getApplicationContext().deleteDatabase("records");
         initialNavigation();
         initialFloatingActionButton();
         DialpadsetOnClickListeners();
@@ -134,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         displayCallRecord();
         getPermission();
         giveTips();
+        listener();
     }
 
     @Override
@@ -180,11 +185,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.no_disturb:
                 if (item.isChecked()) {
+                    //关闭免打扰
                     item.setChecked(false);
-                    //TODO:关闭免打扰
+                    myCall.setChecked(0);
                 } else {
+                    //开启免打扰
                     item.setChecked(true);
-                    //TODO:开启免打扰
+                    setUpNoDisturb();
                 }
                 break;
             case R.id.remind:
@@ -205,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
+        checkUpdate();
         updateContactListView();
         Cursor cursor = resolver.query(callRecordUri, new String[]{"number", "name", "attribution",
                 "calltime", "duration", "status"}, null, null, null);
@@ -215,6 +223,10 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 1);
+        }
+        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_CALL_LOG)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_CALL_LOG},1000);
         }
     }
 
@@ -481,13 +493,32 @@ public class MainActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    private void deleteCallRecord(int position) {
+    private void deleteCallRecord(final int position) {
         //删除通话记录
-        resolver.delete(callRecordUri, "calltime = ? and number = ?",
-                new String[]{record_list.get(position).get("calltime").toString(),
-                        record_list.get(position).get("number").toString()});
-        record_list.remove(position);
-        adapter.notifyDataSetChanged();
+        RelativeLayout form = new RelativeLayout(this);
+        TextView textView = new TextView(this);
+        textView.setText("是否删除此通话记录？");
+        textView.setPadding(0, 20, 0, 0);
+        textView.setTextSize(18);
+        form.setGravity(Gravity.CENTER);
+        textView.setTextColor(Color.BLACK);
+        form.addView(textView);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog alertDialog = builder.setIcon(R.drawable.ic_warning_green_24dp)
+                .setTitle("警告")
+                .setView(form)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int j) {
+                        resolver.delete(callRecordUri, "calltime = ? and number = ?",
+                                new String[]{record_list.get(position).get("calltime").toString(),
+                                        record_list.get(position).get("number").toString()});
+                        record_list.remove(position);
+                        adapter.notifyDataSetChanged();
+                    }
+                }).create();
+        alertDialog.show();
     }
 
     private void displayCallRecord() {
@@ -648,7 +679,7 @@ public class MainActivity extends AppCompatActivity {
                 message = "除夕";
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             if (!message.isEmpty()) {
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"0");
                 Notification notification = builder.setContentTitle("节日提醒")
                         .setSmallIcon(R.drawable.festival_reminder)
                         .setContentText("今天是" + message)
@@ -670,7 +701,7 @@ public class MainActivity extends AppCompatActivity {
                     names.add(name);
             }
             for (int i = 0; i < names.size(); ++i) {
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "1");
                 Notification notification = builder.setContentTitle("生日提醒")
                         .setSmallIcon(R.drawable.birthdy_reminder)
                         .setContentText("今天是" + names.get(i) + "的生日")
@@ -714,16 +745,76 @@ public class MainActivity extends AppCompatActivity {
         else
             return 30;
     }
+
     protected List<Contact> searchContect(String query){
         List<Contact> result = new ArrayList<>();
         String[] argList = {"%" + query + "%"};
         Cursor cursor = resolver.query(contactUri, new String[]{"distinct name"},
-                "name like ?", argList, null);
+                "pinyin like ?", argList, null);
         while (cursor.moveToNext()) {
             Contact contact = new Contact();
             contact.setName(cursor.getString(cursor.getColumnIndex("name")));
             result.add(contact);
         }
         return result;
+    }
+
+    private void listener(){
+        myCall = new CustomPhoneStateListener(this,resolver);
+        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        tm.listen(myCall, PhoneStateListener.LISTEN_CALL_STATE);
+    }
+
+    private void checkUpdate(){
+        if(myCall.getJudge() == 1){
+            Cursor cursor;
+            getCallHistory record = new getCallHistory(this);
+
+            ContentValues contentValues = new ContentValues();
+            String number = record.getNumber();
+            cursor = resolver.query(contactUri, new String[]{"number", "name", "attribution"}, "number = ?", new String[]{number}, null);
+            if (cursor != null && cursor.getCount() != 0) {
+                cursor.moveToNext();
+                contentValues.put("name", cursor.getString(cursor.getColumnIndex("name")));
+                contentValues.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
+            } else {
+                contentValues.put("name", number);
+                contentValues.put("attribution", new QueryAttribution(number).getAttribution());
+            }
+            cursor = resolver.query(callRecordUri, new String[]{"id"}, null, null, "id desc");
+            int index;
+            if (cursor != null && cursor.getCount() != 0) {
+                cursor.moveToFirst();
+                index = cursor.getInt(0);
+            } else{
+                index = 0;
+            }
+            contentValues.put("id", index + 1);
+            contentValues.put("number", number);
+            contentValues.put("status", record.getType());
+            contentValues.put("calltime", record.getDate());
+            contentValues.put("duration", record.getDuration());
+            resolver.insert(callRecordUri, contentValues);
+            myCall.setJudge(0);
+        }
+    }
+
+    private void setUpNoDisturb() {
+        myCall.setChecked(1);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        View source = LayoutInflater.from(this).inflate(R.layout.white_list_time,null);
+        AlertDialog alertDialog = dialogBuilder.setView(source)
+                .setTitle("白名单时间")
+                .setNegativeButton("取消",null)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        int beginTime = Integer.parseInt(beginHour.getText().toString() + beginMin.getText().toString());
+//                        int endTime = Integer.parseInt(endHour.getText().toString() + endMin.getText().toString());
+//                        myCall.setBeginTime(beginTime);
+//                        myCall.setEndTime(endTime);
+                    }
+                }).create();
+        alertDialog.show();
     }
 }

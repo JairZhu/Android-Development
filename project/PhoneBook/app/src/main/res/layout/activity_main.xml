@@ -10,7 +10,8 @@
     <ListView
         android:id="@+id/dial_listview"
         android:layout_width="match_parent"
-        android:layout_height="460dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/navigation"
         app:layout_constraintTop_toTopOf="parent" />
 
     <RelativeLayout
@@ -38,17 +39,18 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/contact_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/navigation"
         app:layout_constraintTop_toTopOf="@+id/side_bar" />
 
     <com.example.phonebook.WaveSideBar
         android:id="@+id/side_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/navigation"
+        app:layout_constraintBottom_toTopOf="@id/navigation"
+        app:layout_constraintTop_toTopOf="parent"
         app:sidebar_text_color="#8D6E63" />
 
     <android.support.design.widget.FloatingActionButton

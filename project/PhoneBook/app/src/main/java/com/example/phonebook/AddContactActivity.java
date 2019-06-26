@@ -95,9 +95,15 @@ public class AddContactActivity extends AppCompatActivity {
                 if (checkInfo()) {
                     ContentValues contentValues = new ContentValues();
                     String name = newname.getText().toString();
-                    if (name.isEmpty())
+                    String pinyin = name;
+                    if (name.isEmpty()) {
                         name = number;
+                        pinyin = number;
+                    }
+                    else if (CharacterToPinyin.isChinese(name))
+                        pinyin = CharacterToPinyin.toPinyin(name);
                     contentValues.put("name", name);
+                    contentValues.put("pinyin", pinyin);
                     contentValues.put("number", number);
                     contentValues.put("attribution", new QueryAttribution(number).getAttribution());
                     Cursor cursor = resolver.query(uri, new String[]{"birthday"}, "name = ?",

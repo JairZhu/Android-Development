@@ -12,7 +12,7 @@ public class ContactDBHandler extends SQLiteOpenHelper {
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table contacts(number varchar(11) primary key, name varchar(50)," +
+        db.execSQL("create table contacts(number varchar(11) primary key, name varchar(50), pinyin varchar(50)," +
                 "attribution varchar(50), birthday date, whitelist int default 0)");
     }
     @Override

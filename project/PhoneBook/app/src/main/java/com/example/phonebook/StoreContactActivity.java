@@ -32,7 +32,7 @@ public class StoreContactActivity extends AppCompatActivity {
             else if (contact.getIndex().compareTo(t1.getIndex()) < 0)
                 return -1;
             else if (contact.getIndex().compareTo(t1.getIndex()) == 0
-                    && contact.getName().compareTo(t1.getName()) < 0)
+                    && contact.getPinyin().compareTo(t1.getPinyin()) < 0)
                 return -1;
             else
                 return 1;

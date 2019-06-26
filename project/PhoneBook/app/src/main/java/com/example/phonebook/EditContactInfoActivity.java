@@ -136,10 +136,16 @@ public class EditContactInfoActivity extends AppCompatActivity {
             if (number.isEmpty())
                 continue;
             String tmpName = name;
-            if (tmpName.isEmpty())
+            String pinyin = tmpName;
+            if (tmpName.isEmpty()) {
                 tmpName = number;
+                pinyin = number;
+            }
+            else if (CharacterToPinyin.isChinese(tmpName))
+                pinyin = CharacterToPinyin.toPinyin(tmpName);
             ContentValues values = new ContentValues();
             values.put("name", tmpName);
+            values.put("pinyin", pinyin);
             values.put("birthday", birthday);
             values.put("number", number);
             values.put("attribution", new QueryAttribution(number).getAttribution());

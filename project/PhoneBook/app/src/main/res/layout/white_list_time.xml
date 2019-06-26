@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+        <TableRow android:layout_marginBottom="10dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:textSize="18dp"
+                android:text="开始时间"/>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:id="@+id/white_list_begin_time"
+                android:padding="10dp"
+                android:hint="请选择开始时间"
+                android:inputType="none"
+                android:background="@drawable/edit_border"/>
+        </TableRow>
+        <TableRow android:layout_marginBottom="10dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:textSize="18dp"
+                android:text="结束时间"/>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:id="@+id/white_list_end_time"
+                android:padding="10dp"
+                android:hint="请选择结束时间"
+                android:inputType="none"
+                android:background="@drawable/edit_border"/>
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>

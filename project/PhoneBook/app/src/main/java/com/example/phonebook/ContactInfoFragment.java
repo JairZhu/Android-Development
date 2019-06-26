@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -154,12 +155,15 @@ public class ContactInfoFragment extends Fragment {
         RelativeLayout form = new RelativeLayout(getContext());
         TextView textView = new TextView(getContext());
         textView.setText("是否擦除所有联系痕迹？");
+        textView.setPadding(0, 20, 0, 0);
         textView.setTextSize(18);
-        textView.setPadding(30, 40, 0, 0);
+        form.setGravity(Gravity.CENTER);
         textView.setTextColor(Color.BLACK);
         form.addView(textView);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        alertDialog = builder.setView(form)
+        alertDialog = builder.setIcon(R.drawable.ic_warning_green_24dp)
+                .setTitle("警告")
+                .setView(form)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
@@ -175,12 +179,15 @@ public class ContactInfoFragment extends Fragment {
         RelativeLayout form = new RelativeLayout(getContext());
         TextView textView = new TextView(getContext());
         textView.setText("是否删除此联系人？");
+        textView.setPadding(0, 20, 0, 0);
         textView.setTextSize(18);
-        textView.setPadding(30, 40, 0, 0);
+        form.setGravity(Gravity.CENTER);
         textView.setTextColor(Color.BLACK);
         form.addView(textView);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        alertDialog = builder.setView(form)
+        alertDialog = builder.setIcon(R.drawable.ic_warning_green_24dp)
+                .setTitle("警告")
+                .setView(form)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override

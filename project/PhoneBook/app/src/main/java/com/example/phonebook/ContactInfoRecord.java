@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -153,12 +154,15 @@ public class ContactInfoRecord extends Fragment {
                             RelativeLayout form = new RelativeLayout(getContext());
                             TextView textView = new TextView(getContext());
                             textView.setText("是否删除此通话记录？");
+                            textView.setPadding(0, 20, 0, 0);
                             textView.setTextSize(18);
-                            textView.setPadding(30, 40, 0, 0);
+                            form.setGravity(Gravity.CENTER);
                             textView.setTextColor(Color.BLACK);
                             form.addView(textView);
                             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                            alertDialog = builder.setView(form)
+                            alertDialog = builder.setIcon(R.drawable.ic_warning_green_24dp)
+                                    .setTitle("警告")
+                                    .setView(form)
                                     .setNegativeButton("取消", null)
                                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
@@ -211,11 +215,14 @@ public class ContactInfoRecord extends Fragment {
                 TextView textView = new TextView(getContext());
                 textView.setText("是否删除全部通话记录？");
                 textView.setTextSize(18);
-                textView.setPadding(30, 40, 0, 0);
+                textView.setPadding(0, 20, 0, 0);
+                form.setGravity(Gravity.CENTER);
                 textView.setTextColor(Color.BLACK);
                 form.addView(textView);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                alertDialog = builder.setView(form)
+                alertDialog = builder.setIcon(R.drawable.ic_warning_green_24dp)
+                        .setTitle("警告")
+                        .setView(form)
                         .setNegativeButton("取消", null)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
