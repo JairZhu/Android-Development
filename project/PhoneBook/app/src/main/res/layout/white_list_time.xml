@@ -10,34 +10,40 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.2"
+                android:layout_weight="0.3"
                 android:textSize="18dp"
+                android:gravity="center"
+                android:textColor="@color/black"
                 android:text="开始时间"/>
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.8"
+                android:layout_weight="0.7"
                 android:id="@+id/white_list_begin_time"
                 android:padding="10dp"
                 android:hint="请选择开始时间"
                 android:inputType="none"
+                android:textSize="18dp"
                 android:background="@drawable/edit_border"/>
         </TableRow>
         <TableRow android:layout_marginBottom="10dp">
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.2"
+                android:layout_weight="0.3"
                 android:textSize="18dp"
+                android:gravity="center"
+                android:textColor="@color/black"
                 android:text="结束时间"/>
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.8"
+                android:layout_weight="0.7"
                 android:id="@+id/white_list_end_time"
                 android:padding="10dp"
                 android:hint="请选择结束时间"
                 android:inputType="none"
+                android:textSize="18dp"
                 android:background="@drawable/edit_border"/>
         </TableRow>
     </TableLayout>

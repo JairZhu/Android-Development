@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.SearchManager;
+import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -56,6 +57,7 @@ import android.widget.SearchView;
 import android.widget.SimpleAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import org.w3c.dom.Text;
@@ -191,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     //开启免打扰
                     item.setChecked(true);
-                    setUpNoDisturb();
+                    setUpNoDisturb(item);
                 }
                 break;
             case R.id.remind:
@@ -697,7 +699,7 @@ public class MainActivity extends AppCompatActivity {
             while (cursor != null && cursor.moveToNext()) {
                 String name = cursor.getString(cursor.getColumnIndex("name"));
                 String number = cursor.getString(cursor.getColumnIndex("number"));
-                if (!name.equals(number))
+                if (!name.equals(number) && !names.contains(name))
                     names.add(name);
             }
             for (int i = 0; i < names.size(); ++i) {
@@ -799,20 +801,60 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setUpNoDisturb() {
+    private void setUpNoDisturb(final MenuItem item) {
         myCall.setChecked(1);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         View source = LayoutInflater.from(this).inflate(R.layout.white_list_time,null);
+        final EditText startTime = (EditText) source.findViewById(R.id.white_list_begin_time);
+        final EditText endTime = (EditText) source.findViewById(R.id.white_list_end_time);
+        startTime.setInputType(InputType.TYPE_NULL);
+        endTime.setInputType(InputType.TYPE_NULL);
+        long time = System.currentTimeMillis();
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        startTime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b) {
+                    new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                            startTime.setText(hour + ":" + minute);
+                        }
+                    }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+                }
+            }
+        });
+        endTime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b) {
+                    new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                            endTime.setText(hour + ":" + minute);
+                        }
+                    }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+                }
+            }
+        });
         AlertDialog alertDialog = dialogBuilder.setView(source)
                 .setTitle("白名单时间")
-                .setNegativeButton("取消",null)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        item.setChecked(false);
+                    }
+                })
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-//                        int beginTime = Integer.parseInt(beginHour.getText().toString() + beginMin.getText().toString());
-//                        int endTime = Integer.parseInt(endHour.getText().toString() + endMin.getText().toString());
-//                        myCall.setBeginTime(beginTime);
-//                        myCall.setEndTime(endTime);
+                        String[] starts = startTime.getText().toString().split(":");
+                        String[] ends = endTime.getText().toString().split(":");
+                        int BeginTime = Integer.parseInt(starts[0]) * 100 + Integer.parseInt(starts[1]);
+                        int EndTime = Integer.parseInt(ends[0]) * 100 + Integer.parseInt(ends[1]);
+                        myCall.setBeginTime(BeginTime);
+                        myCall.setEndTime(EndTime);
                     }
                 }).create();
         alertDialog.show();
