@@ -3,6 +3,8 @@ package com.example.phonebook;
 import android.app.DatePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -107,7 +109,7 @@ public class EditContactInfoActivity extends AppCompatActivity {
                 break;
             case R.id.check:
                 changeInformation();
-                this.finish();
+                startActivity(new Intent(this, MainActivity.class));
                 break;
         }
         return true;
@@ -135,6 +137,11 @@ public class EditContactInfoActivity extends AppCompatActivity {
             String number = newnumber.getText().toString();
             if (number.isEmpty())
                 continue;
+            Cursor cursor = resolver.query(contactUri, new String[]{"number"}, "number = ?",
+                    new String[]{number}, null);
+            if (cursor != null && cursor.getCount() != 0)
+                continue;
+            cursor.close();
             String tmpName = name;
             String pinyin = tmpName;
             if (tmpName.isEmpty()) {
@@ -148,7 +155,7 @@ public class EditContactInfoActivity extends AppCompatActivity {
             values.put("pinyin", pinyin);
             values.put("birthday", birthday);
             values.put("number", number);
-            values.put("attribution", new QueryAttribution(number).getAttribution());
+            values.put("attribution", new QueryAttribution().getAttribution(number));
             resolver.insert(contactUri, values);
             values.clear();
             values.put("name", tmpName);

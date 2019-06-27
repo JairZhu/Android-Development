@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -26,6 +28,9 @@ import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitmapUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,7 +144,6 @@ public class ContactInfoFragment extends Fragment {
         bundle.putSerializable("numberList", lists);
         intent.putExtras(bundle);
         getContext().startActivity(intent);
-        getActivity().finish();
     }
 
     private void addWhiteList() {
@@ -203,6 +207,32 @@ public class ContactInfoFragment extends Fragment {
     }
 
     private void shareContact() {
-        //TODO:分享联系人（二维码）
+        //分享联系人（二维码）
+        Cursor cursor = resolver.query(contactUri, new String[]{"number", "name", "birthday", "attribution", "pinyin"},
+                "name=?", new String[]{name}, null);
+        String content = "";
+        while (cursor.moveToNext()) {
+            String nowname = cursor.getString(cursor.getColumnIndex("name"));
+            String nowbirthday = cursor.getString(cursor.getColumnIndex("birthday"));
+            String nownumber = cursor.getString(cursor.getColumnIndex("number"));
+            String nowattribution = cursor.getString(cursor.getColumnIndex("attribution"));
+            String newpinyin = cursor.getString(cursor.getColumnIndex("pinyin"));
+            content = content + nowname + "," + nownumber + "," + nowbirthday + "," + nowattribution + "," + newpinyin + '\n';
+        }
+        try {
+            Bitmap bitmap = BitmapUtils.create2DCode(content);
+            RelativeLayout form = new RelativeLayout(getContext());
+            ImageView imageView = new ImageView(getContext());
+            imageView.setImageBitmap(bitmap);
+            form.setGravity(Gravity.CENTER);
+            form.addView(imageView);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            AlertDialog alertDialog = builder.setTitle("分享联系人")
+                    .setView(form)
+                    .setPositiveButton("确定", null).create();
+            alertDialog.show();
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
     }
 }

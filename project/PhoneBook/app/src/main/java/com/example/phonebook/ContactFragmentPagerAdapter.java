@@ -16,14 +16,17 @@ public class ContactFragmentPagerAdapter extends FragmentPagerAdapter {
         this.fragments = fragmentArrayList;
         this.titles = titles;
     }
+
     @Override
     public Fragment getItem(int position) {
         return fragments.get(position);
     }
+
     @Override
     public int getCount() {
         return titles.length;
     }
+
     @Override
     public CharSequence getPageTitle(int position) {
         return titles[position];

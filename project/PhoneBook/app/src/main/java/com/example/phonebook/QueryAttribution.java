@@ -13,8 +13,8 @@ import java.net.URLConnection;
 public class QueryAttribution {
     private String attribution = "";
 
-    public QueryAttribution(final String phoneNumber) {
-        new Thread(new Runnable() {
+    public String getAttribution(final String phoneNumber) {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -35,17 +35,18 @@ public class QueryAttribution {
                     else
                         attribution = "未知号码";
                     Log.v("getAttribution", attribution);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     attribution = "未知号码";
                 }
             }
-        }).start();
-    }
-
-    public String getAttribution() {
-        while (attribution.isEmpty());
+        });
+        thread.start();
+        try {
+            thread.join(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return attribution;
     }
 }

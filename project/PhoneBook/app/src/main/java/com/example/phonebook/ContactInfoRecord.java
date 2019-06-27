@@ -88,7 +88,7 @@ public class ContactInfoRecord extends Fragment {
     private void updateListView() {
         lists.clear();
         for (int i = 0; i < numbers.size(); ++i) {
-            Cursor recordCursor = resolver.query(callRecordUri, new String[] {"calltime", "duration", "status"},
+            Cursor recordCursor = resolver.query(callRecordUri, new String[]{"calltime", "duration", "status"},
                     "number = ?", new String[]{numbers.get(i)}, null);
             while (recordCursor != null && recordCursor.moveToNext()) {
                 Map<String, Object> map = new HashMap<>();
@@ -107,7 +107,7 @@ public class ContactInfoRecord extends Fragment {
 
     private void setListView(View rootView) {
         listView = (ListView) rootView.findViewById(R.id.contact_info_record_listview);
-        Cursor cursor = resolver.query(contactUri, new String[]{"number"},"name = ?", new String[]{name}, null);
+        Cursor cursor = resolver.query(contactUri, new String[]{"number"}, "name = ?", new String[]{name}, null);
         numbers = new ArrayList<>();
         while (cursor != null && cursor.moveToNext()) {
             String numb = cursor.getString(cursor.getColumnIndex("number"));
@@ -116,7 +116,7 @@ public class ContactInfoRecord extends Fragment {
         cursor.close();
         lists = new ArrayList<>();
         for (int i = 0; i < numbers.size(); ++i) {
-            Cursor recordCursor = resolver.query(callRecordUri, new String[] {"calltime", "duration", "status"},
+            Cursor recordCursor = resolver.query(callRecordUri, new String[]{"calltime", "duration", "status"},
                     "number = ?", new String[]{numbers.get(i)}, null);
             while (recordCursor != null && recordCursor.moveToNext()) {
                 Map<String, Object> map = new HashMap<>();
@@ -193,8 +193,7 @@ public class ContactInfoRecord extends Fragment {
             img.setVisibility(View.GONE);
             text.setVisibility(View.GONE);
             toolbar.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             img.setVisibility(View.VISIBLE);
             text.setVisibility(View.VISIBLE);
             toolbar.setVisibility(View.GONE);

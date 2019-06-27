@@ -1,4 +1,5 @@
 package com.example.phonebook;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -26,33 +27,38 @@ class CustomPhoneStateListener extends PhoneStateListener {
     private Uri contactUri = Uri.parse("content://com.example.providers.ContactDB/");
     private ContentResolver resolver;
     private static final String TAG = "MyPhoneCallListener";
+
     /**
      * 返回电话状态
-     *
+     * <p>
      * CALL_STATE_IDLE 无任何状态时
      * CALL_STATE_OFFHOOK 接起电话时
      * CALL_STATE_RINGING 电话进来时
      */
-    CustomPhoneStateListener(Context context,ContentResolver resolver){
+    CustomPhoneStateListener(Context context, ContentResolver resolver) {
         this.context = context;
         this.resolver = resolver;
     }
 
-    public void setChecked(int i){
+    public void setChecked(int i) {
         checked = i;
     }
 
-    public int getJudge(){
+    public int getJudge() {
         return judge;
     }
 
-    public void setJudge(int i){
+    public void setJudge(int i) {
         judge = i;
     }
 
-    public void setBeginTime(int i){beginTime = i;}
+    public void setBeginTime(int i) {
+        beginTime = i;
+    }
 
-    public void setEndTime(int i){endTime = i;}
+    public void setEndTime(int i) {
+        endTime = i;
+    }
 
     @Override
     public void onCallStateChanged(int state, String incomingNumber) {
@@ -67,14 +73,14 @@ class CustomPhoneStateListener extends PhoneStateListener {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
                 int time = Integer.parseInt(String.valueOf(cal.get(Calendar.HOUR)) + String.valueOf((cal.get(Calendar.MINUTE))));
-                if(checked == 0 || time < beginTime || time > endTime){
+                if (checked == 0 || time < beginTime || time > endTime) {
                     break;
                 }
-                cursor = resolver.query(contactUri, new String[]{"number","whitelist"},"number = ?",new String[]{incomingNumber},null);
-                if(cursor != null && cursor.getCount()!= 0){
+                cursor = resolver.query(contactUri, new String[]{"number", "whitelist"}, "number = ?", new String[]{incomingNumber}, null);
+                if (cursor != null && cursor.getCount() != 0) {
                     cursor.moveToNext();
                     int judge = cursor.getInt(cursor.getColumnIndex("whitelist"));
-                    if(judge == 0){
+                    if (judge == 0) {
                         try {
                             // 延迟5秒后自动挂断电话
                             // 首先拿到TelephonyManager
@@ -92,11 +98,11 @@ class CustomPhoneStateListener extends PhoneStateListener {
                             //允许访问私有方法
                             mt.setAccessible(true);
                             mt.invoke(obj);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
-                     }
-                }else{
+                    }
+                } else {
                     try {
                         // 延迟5秒后自动挂断电话
                         // 首先拿到TelephonyManager
@@ -114,7 +120,7 @@ class CustomPhoneStateListener extends PhoneStateListener {
                         //允许访问私有方法
                         mt.setAccessible(true);
                         mt.invoke(obj);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

@@ -87,7 +87,7 @@ public class AddContactActivity extends AppCompatActivity {
                 break;
             case R.id.check:
                 String number = newnumber.getText().toString();
-                Cursor cur= resolver.query(uri, new String[]{"number"}, null, null, null);
+                Cursor cur = resolver.query(uri, new String[]{"number"}, null, null, null);
                 while (cur != null && cur.moveToNext())
                     if (number.equals(cur.getString(cur.getColumnIndex("number"))))
                         this.finish();
@@ -98,13 +98,12 @@ public class AddContactActivity extends AppCompatActivity {
                     if (name.isEmpty()) {
                         name = number;
                         pinyin = number;
-                    }
-                    else if (CharacterToPinyin.isChinese(name))
+                    } else if (CharacterToPinyin.isChinese(name))
                         pinyin = CharacterToPinyin.toPinyin(name);
                     contentValues.put("name", name);
                     contentValues.put("pinyin", pinyin);
                     contentValues.put("number", number);
-                    contentValues.put("attribution", new QueryAttribution(number).getAttribution());
+                    contentValues.put("attribution", new QueryAttribution().getAttribution(number));
                     Cursor cursor = resolver.query(uri, new String[]{"birthday"}, "name = ?",
                             new String[]{name}, null);
                     contentValues.put("birthday", newbirthday.getText().toString());
@@ -118,6 +117,7 @@ public class AddContactActivity extends AppCompatActivity {
                             break;
                         }
                     }
+                    cursor.close();
                     if (newwhitelist.isChecked())
                         contentValues.put("whitelist", 1);
                     else
@@ -127,8 +127,7 @@ public class AddContactActivity extends AppCompatActivity {
                     values.put("name", name);
                     resolver.update(callRecordUri, values, "number = ?", new String[]{number});
                     this.finish();
-                }
-                else
+                } else
                     Toast.makeText(this, "请输入电话号码！", Toast.LENGTH_SHORT).show();
                 break;
         }

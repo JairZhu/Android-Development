@@ -8,13 +8,18 @@ import android.net.Uri;
 
 public class RecordDB extends ContentProvider {
     private DBOpenHandler dbOpenHandler;
+
     @Override
     public boolean onCreate() {
         dbOpenHandler = new DBOpenHandler(getContext(), "records", null, 1);
         return true;
     }
+
     @Override
-    public String getType(Uri uri) { return null; }
+    public String getType(Uri uri) {
+        return null;
+    }
+
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         SQLiteDatabase db = dbOpenHandler.getWritableDatabase();
@@ -22,6 +27,7 @@ public class RecordDB extends ContentProvider {
         db.close();
         return uri;
     }
+
     @Override
     public int delete(Uri uri, String where, String[] whereargs) {
         SQLiteDatabase db = dbOpenHandler.getWritableDatabase();
@@ -29,6 +35,7 @@ public class RecordDB extends ContentProvider {
         db.close();
         return ret;
     }
+
     @Override
     public int update(Uri uri, ContentValues values, String where, String[] whereargs) {
         SQLiteDatabase db = dbOpenHandler.getWritableDatabase();
@@ -36,6 +43,7 @@ public class RecordDB extends ContentProvider {
         db.close();
         return num;
     }
+
     @Override
     public Cursor query(Uri uri, String[] projection, String where, String[] whereargs, String sortorder) {
         SQLiteDatabase db = dbOpenHandler.getWritableDatabase();

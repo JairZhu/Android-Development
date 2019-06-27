@@ -141,9 +141,15 @@ public class WaveSideBar extends View {
         mPaint.setColor(mTextColor);
         mPaint.setTextSize(mTextSize);
         switch (mTextAlignment) {
-            case TEXT_ALIGN_CENTER: mPaint.setTextAlign(Paint.Align.CENTER); break;
-            case TEXT_ALIGN_LEFT:   mPaint.setTextAlign(Paint.Align.LEFT); break;
-            case TEXT_ALIGN_RIGHT:  mPaint.setTextAlign(Paint.Align.RIGHT); break;
+            case TEXT_ALIGN_CENTER:
+                mPaint.setTextAlign(Paint.Align.CENTER);
+                break;
+            case TEXT_ALIGN_LEFT:
+                mPaint.setTextAlign(Paint.Align.LEFT);
+                break;
+            case TEXT_ALIGN_RIGHT:
+                mPaint.setTextAlign(Paint.Align.RIGHT);
+                break;
         }
     }
 
@@ -165,7 +171,7 @@ public class WaveSideBar extends View {
 
         float areaLeft = (mSideBarPosition == POSITION_LEFT) ? 0 : (width - mBarWidth - getPaddingRight());
         float areaRight = (mSideBarPosition == POSITION_LEFT) ? (getPaddingLeft() + areaLeft + mBarWidth) : width;
-        float areaTop = height/2 - mBarHeight/2;
+        float areaTop = height / 2 - mBarHeight / 2;
         float areaBottom = areaTop + mBarHeight;
         mStartTouchingArea.set(
                 areaLeft,
@@ -174,8 +180,8 @@ public class WaveSideBar extends View {
                 areaBottom);
 
         // the baseline Y of the first item' text to draw
-        mFirstItemBaseLineY = (height/2 - mIndexItems.length*mIndexItemHeight/2)
-                + (mIndexItemHeight/2 - (fontMetrics.descent-fontMetrics.ascent)/2)
+        mFirstItemBaseLineY = (height / 2 - mIndexItems.length * mIndexItemHeight / 2)
+                + (mIndexItemHeight / 2 - (fontMetrics.descent - fontMetrics.ascent) / 2)
                 - fontMetrics.ascent;
     }
 
@@ -185,39 +191,39 @@ public class WaveSideBar extends View {
 
         // draw each item
         for (int i = 0, mIndexItemsLength = mIndexItems.length; i < mIndexItemsLength; i++) {
-            float baseLineY = mFirstItemBaseLineY + mIndexItemHeight*i;
+            float baseLineY = mFirstItemBaseLineY + mIndexItemHeight * i;
 
             // calculate the scale factor of the item to draw
             float scale = getItemScale(i);
 
-            int alphaScale = (i == mCurrentIndex) ? (255) : (int) (255 * (1-scale));
+            int alphaScale = (i == mCurrentIndex) ? (255) : (int) (255 * (1 - scale));
             mPaint.setAlpha(alphaScale);
 
-            mPaint.setTextSize(mTextSize + mTextSize*scale);
+            mPaint.setTextSize(mTextSize + mTextSize * scale);
 
             float baseLineX = 0f;
             if (mSideBarPosition == POSITION_LEFT) {
                 switch (mTextAlignment) {
                     case TEXT_ALIGN_CENTER:
-                        baseLineX = getPaddingLeft() + mBarWidth/2 + mMaxOffset*scale;
+                        baseLineX = getPaddingLeft() + mBarWidth / 2 + mMaxOffset * scale;
                         break;
                     case TEXT_ALIGN_LEFT:
-                        baseLineX = getPaddingLeft() + mMaxOffset*scale;
+                        baseLineX = getPaddingLeft() + mMaxOffset * scale;
                         break;
                     case TEXT_ALIGN_RIGHT:
-                        baseLineX = getPaddingLeft() + mBarWidth + mMaxOffset*scale;
+                        baseLineX = getPaddingLeft() + mBarWidth + mMaxOffset * scale;
                         break;
                 }
             } else {
                 switch (mTextAlignment) {
                     case TEXT_ALIGN_CENTER:
-                        baseLineX = getWidth() - getPaddingRight() - mBarWidth/2 - mMaxOffset*scale;
+                        baseLineX = getWidth() - getPaddingRight() - mBarWidth / 2 - mMaxOffset * scale;
                         break;
                     case TEXT_ALIGN_RIGHT:
-                        baseLineX = getWidth() - getPaddingRight() - mMaxOffset*scale;
+                        baseLineX = getWidth() - getPaddingRight() - mMaxOffset * scale;
                         break;
                     case TEXT_ALIGN_LEFT:
-                        baseLineX = getWidth() - getPaddingRight() - mBarWidth - mMaxOffset*scale;
+                        baseLineX = getWidth() - getPaddingRight() - mBarWidth - mMaxOffset * scale;
                         break;
                 }
             }
@@ -244,8 +250,8 @@ public class WaveSideBar extends View {
     private float getItemScale(int index) {
         float scale = 0;
         if (mCurrentIndex != -1) {
-            float distance = Math.abs(mCurrentY - (mIndexItemHeight*index+mIndexItemHeight/2)) / mIndexItemHeight;
-            scale = 1 - distance*distance/16;
+            float distance = Math.abs(mCurrentY - (mIndexItemHeight * index + mIndexItemHeight / 2)) / mIndexItemHeight;
+            scale = 1 - distance * distance / 16;
             scale = Math.max(scale, 0);
         }
         return scale;
@@ -297,7 +303,7 @@ public class WaveSideBar extends View {
     }
 
     private int getSelectedIndex(float eventY) {
-        mCurrentY = eventY - (getHeight()/2 - mBarHeight /2);
+        mCurrentY = eventY - (getHeight() / 2 - mBarHeight / 2);
         if (mCurrentY <= 0) {
             return 0;
         }
@@ -351,9 +357,15 @@ public class WaveSideBar extends View {
             return;
         }
         switch (align) {
-            case TEXT_ALIGN_CENTER: mPaint.setTextAlign(Paint.Align.CENTER); break;
-            case TEXT_ALIGN_LEFT:   mPaint.setTextAlign(Paint.Align.LEFT); break;
-            case TEXT_ALIGN_RIGHT:  mPaint.setTextAlign(Paint.Align.RIGHT); break;
+            case TEXT_ALIGN_CENTER:
+                mPaint.setTextAlign(Paint.Align.CENTER);
+                break;
+            case TEXT_ALIGN_LEFT:
+                mPaint.setTextAlign(Paint.Align.LEFT);
+                break;
+            case TEXT_ALIGN_RIGHT:
+                mPaint.setTextAlign(Paint.Align.RIGHT);
+                break;
             default:
                 throw new IllegalArgumentException(
                         "the alignment must be TEXT_ALIGN_CENTER, TEXT_ALIGN_LEFT or TEXT_ALIGN_RIGHT");

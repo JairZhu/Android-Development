@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
 import android.graphics.Color;
+import android.icu.text.UnicodeSetSpanner;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
@@ -63,6 +64,8 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import com.google.zxing.activity.CaptureActivity;
 
 import org.w3c.dom.Text;
 
@@ -134,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         resolver = getContentResolver();
         makePhoneCall = new MakePhoneCall(this, resolver);
 //        getApplicationContext().deleteDatabase("contacts");
-        // getApplicationContext().deleteDatabase("records");
+//        getApplicationContext().deleteDatabase("records");
         initialNavigation();
         initialFloatingActionButton();
         DialpadsetOnClickListeners();
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onNewIntent(Intent intent){
+    public void onNewIntent(Intent intent) {
         //Get search query
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
@@ -188,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
                 onSearchRequested();
                 break;
             case R.id.add_qr_contact:
-                //TODO:扫描二维码添加联系人
+                //扫描二维码添加联系人
+                startActivityForResult(new Intent(MainActivity.this, CaptureActivity.class), 0);
                 break;
             case R.id.no_disturb:
                 if (item.isChecked()) {
@@ -217,32 +221,72 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+            String result = data.getStringExtra(CaptureActivity.SCAN_QRCODE_RESULT);
+            String[] contactInfo = result.split("\n");
+            for (int i = 0; i < contactInfo.length; ++i) {
+                String[] information = contactInfo[i].split(",");
+                String name = information[0], number = information[1], birthday = information[2],
+                        attribution = information[3], pinyin = information[4];
+                Cursor cursor = resolver.query(contactUri, new String[]{"number"}, "number = ?",
+                        new String[]{number}, null);
+                if (cursor != null && cursor.getCount() != 0)
+                    continue;
+                ContentValues values = new ContentValues();
+                values.put("name", name);
+                values.put("number", number);
+                values.put("birthday", birthday);
+                values.put("attribution", attribution);
+                values.put("pinyin", pinyin);
+                resolver.insert(contactUri, values);
+                values.clear();
+                values.put("name", name);
+                resolver.update(callRecordUri, values, "number = ?", new String[]{number});
+                updateContactListView();
+                updateRecordListView();
+                Toast.makeText(this, "联系人添加成功", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
     protected void onRestart() {
         super.onRestart();
         checkUpdate();
         updateContactListView();
-        Cursor cursor = resolver.query(callRecordUri, new String[]{"number", "name", "attribution",
-                "calltime", "duration", "status"}, null, null, null);
-        updateRecordListView(cursor);
+        updateRecordListView();
     }
 
     private void getPermission() {
+        ArrayList<String> permissionList = new ArrayList<String>();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.CAMERA);
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 1);
+            permissionList.add(Manifest.permission.CALL_PHONE);
         }
-        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_CALL_LOG)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_CALL_LOG},2);
+            permissionList.add(Manifest.permission.READ_CALL_LOG);
         }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.VIBRATE)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.VIBRATE}, 3);
+            permissionList.add(Manifest.permission.VIBRATE);
         }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_NOTIFICATION_POLICY}, 4);
+            permissionList.add(Manifest.permission.ACCESS_NOTIFICATION_POLICY);
         }
+        if (!permissionList.isEmpty())
+            ActivityCompat.requestPermissions(this, permissionList.toArray(new String[permissionList.size()]), 1000);
     }
 
     private void setDialViewVisible(int visible) {
@@ -285,6 +329,7 @@ public class MainActivity extends AppCompatActivity {
             contact.setName(cursor.getString(cursor.getColumnIndex("name")));
             contactList.add(contact);
         }
+        cursor.close();
         Collections.sort(contactList, comparator);
         contacts_view = (RecyclerView) findViewById(R.id.contact_recyclerview);
         contacts_view.setLayoutManager(new LinearLayoutManager(this));
@@ -425,9 +470,7 @@ public class MainActivity extends AppCompatActivity {
                 final String newText = textView.getText().toString();
                 if (newText.length() > 0) {
                     makePhoneCall.makeCall(newText);
-                    Cursor cursor = resolver.query(callRecordUri, new String[]{"number", "name", "attribution",
-                            "calltime", "duration", "status"}, null, null, null);
-                    updateRecordListView(cursor);
+                    updateRecordListView();
                 } else {
                     if (record_list.size() > 0) {
                         String number = record_list.get(0).get("number").toString();
@@ -488,8 +531,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void updateRecordListView(Cursor cursor) {
+    private void updateRecordListView() {
         record_list.clear();
+        Cursor cursor = resolver.query(callRecordUri, new String[]{"number", "name", "attribution",
+                "calltime", "duration", "status"}, null, null, null);
         while (cursor != null && cursor.moveToNext()) {
             Map<String, Object> map = new HashMap<>();
             String name = cursor.getString(cursor.getColumnIndex("name"));
@@ -504,6 +549,7 @@ public class MainActivity extends AppCompatActivity {
             map.put("status", images[cursor.getInt(cursor.getColumnIndex("status"))]);
             record_list.add(map);
         }
+        cursor.close();
         Collections.sort(record_list, recordComparator);
         adapter.notifyDataSetChanged();
     }
@@ -554,6 +600,7 @@ public class MainActivity extends AppCompatActivity {
             map.put("status", images[cursor.getInt(cursor.getColumnIndex("status"))]);
             record_list.add(map);
         }
+        cursor.close();
         Collections.sort(record_list, recordComparator);
         adapter = new SimpleAdapter(this, record_list, R.layout.dial_listview_item,
                 new String[]{"name", "attribution", "calltime", "status", "duration"},
@@ -626,9 +673,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean inContactList(String number) {
         Cursor cursor = resolver.query(contactUri, new String[]{"number"}, null, null, null);
         while (cursor != null && cursor.moveToNext()) {
-            if (number.equals(cursor.getString(cursor.getColumnIndex("number"))))
+            if (number.equals(cursor.getString(cursor.getColumnIndex("number")))) {
+                cursor.close();
                 return true;
+            }
         }
+        cursor.close();
         return false;
     }
 
@@ -644,11 +694,12 @@ public class MainActivity extends AppCompatActivity {
             ContentValues values = new ContentValues();
             values.put("name", number);
             values.put("number", number);
-            values.put("attribution", new QueryAttribution(number).getAttribution());
+            values.put("attribution", new QueryAttribution().getAttribution(number));
             values.put("whitelist", 1);
             resolver.insert(contactUri, values);
         }
         Toast.makeText(this, "已加入白名单", Toast.LENGTH_SHORT).show();
+        cursor.close();
     }
 
     private void addNewContact(int i) {
@@ -727,6 +778,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!name.equals(number) && !names.contains(name))
                     names.add(name);
             }
+            cursor.close();
             for (int i = 0; i < names.size(); ++i) {
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
                 Notification notification = builder.setContentTitle("生日提醒")
@@ -774,7 +826,7 @@ public class MainActivity extends AppCompatActivity {
             return 30;
     }
 
-    protected List<Contact> searchContect(String query){
+    protected List<Contact> searchContect(String query) {
         List<Contact> result = new ArrayList<>();
         String[] argList = {"%" + query + "%"};
         Cursor cursor = resolver.query(contactUri, new String[]{"distinct name"},
@@ -784,38 +836,40 @@ public class MainActivity extends AppCompatActivity {
             contact.setName(cursor.getString(cursor.getColumnIndex("name")));
             result.add(contact);
         }
+        cursor.close();
         return result;
     }
 
-    private void listener(){
-        myCall = new CustomPhoneStateListener(this,resolver);
+    private void listener() {
+        myCall = new CustomPhoneStateListener(this, resolver);
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         tm.listen(myCall, PhoneStateListener.LISTEN_CALL_STATE);
     }
 
-    private void checkUpdate(){
-        if(myCall.getJudge() == 1){
-            Cursor cursor;
+    private void checkUpdate() {
+        if (myCall.getJudge() == 1) {
             getCallHistory record = new getCallHistory(this);
             ContentValues contentValues = new ContentValues();
             String number = record.getNumber();
-            cursor = resolver.query(contactUri, new String[]{"number", "name", "attribution"}, "number = ?", new String[]{number}, null);
+            Cursor cursor = resolver.query(contactUri, new String[]{"number", "name", "attribution"}, "number = ?", new String[]{number}, null);
             if (cursor != null && cursor.getCount() != 0) {
                 cursor.moveToNext();
                 contentValues.put("name", cursor.getString(cursor.getColumnIndex("name")));
                 contentValues.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
             } else {
                 contentValues.put("name", number);
-                contentValues.put("attribution", new QueryAttribution(number).getAttribution());
+                contentValues.put("attribution", new QueryAttribution().getAttribution(number));
             }
+            cursor.close();
             cursor = resolver.query(callRecordUri, new String[]{"id"}, null, null, "id desc");
             int index;
             if (cursor != null && cursor.getCount() != 0) {
                 cursor.moveToFirst();
                 index = cursor.getInt(0);
-            } else{
+            } else {
                 index = 0;
             }
+            cursor.close();
             contentValues.put("id", index + 1);
             contentValues.put("number", number);
             contentValues.put("status", record.getType());
@@ -829,7 +883,7 @@ public class MainActivity extends AppCompatActivity {
     private void setUpNoDisturb(final MenuItem item) {
         myCall.setChecked(1);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        View source = LayoutInflater.from(this).inflate(R.layout.white_list_time,null);
+        View source = LayoutInflater.from(this).inflate(R.layout.white_list_time, null);
         final TimePicker startTime = (TimePicker) source.findViewById(R.id.start_time_picker);
         final TimePicker endTime = (TimePicker) source.findViewById(R.id.end_time_picker);
         startTime.setIs24HourView(true);

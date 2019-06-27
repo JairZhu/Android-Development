@@ -34,9 +34,8 @@ public class MakePhoneCall {
             Intent intent = new Intent(Intent.ACTION_CALL);
             intent.setData(Uri.parse("tel:" + phoneNumber));
             context.startActivity(intent);
-        }
-        else {
-            Toast.makeText(context,"没有权限，请给予权限！", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(context, "没有权限，请给予权限！", Toast.LENGTH_LONG).show();
         }
     }
 }
