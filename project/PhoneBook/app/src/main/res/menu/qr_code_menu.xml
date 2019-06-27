@@ -6,6 +6,6 @@
     <item
         android:id="@+id/qr_code"
         android:title="二维码"
-        android:icon="@drawable/ic_border_clear_white_24dp"
+        android:icon="@drawable/qr_code"
         app:showAsAction="always"/>
 </menu>

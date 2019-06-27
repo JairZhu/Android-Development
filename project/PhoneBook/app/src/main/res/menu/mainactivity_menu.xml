@@ -4,7 +4,7 @@
     <item
         android:id="@+id/add_qr_contact"
         android:title="扫码添加联系人"
-        android:icon="@drawable/ic_add_black_24dp"
+        android:icon="@drawable/scan"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/search_button"

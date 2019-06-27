@@ -59,8 +59,7 @@ public class AddContactActivity extends AppCompatActivity {
                 showDatePickerDialog();
             }
         });
-        Intent intent = getIntent();
-        newnumber.setText(intent.getStringExtra("number"));
+        newnumber.setText(getIntent().getStringExtra("number"));
     }
 
     private void showDatePickerDialog() {

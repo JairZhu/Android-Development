@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     private Uri contactUri = Uri.parse("content://com.example.providers.ContactDB/");
     private int[] images = {R.drawable.callin, R.drawable.callout, R.drawable.missed};
     private boolean reminder = true;
+    private int BeginTime, EndTime;
     private ContentResolver resolver;
     private ActionBar actionBar;
     private ListView record_listview;
@@ -796,7 +797,6 @@ public class MainActivity extends AppCompatActivity {
         if(myCall.getJudge() == 1){
             Cursor cursor;
             getCallHistory record = new getCallHistory(this);
-
             ContentValues contentValues = new ContentValues();
             String number = record.getNumber();
             cursor = resolver.query(contactUri, new String[]{"number", "name", "attribution"}, "number = ?", new String[]{number}, null);
@@ -830,41 +830,33 @@ public class MainActivity extends AppCompatActivity {
         myCall.setChecked(1);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         View source = LayoutInflater.from(this).inflate(R.layout.white_list_time,null);
-        final EditText startTime = (EditText) source.findViewById(R.id.white_list_begin_time);
-        final EditText endTime = (EditText) source.findViewById(R.id.white_list_end_time);
-        startTime.setInputType(InputType.TYPE_NULL);
-        endTime.setInputType(InputType.TYPE_NULL);
+        final TimePicker startTime = (TimePicker) source.findViewById(R.id.start_time_picker);
+        final TimePicker endTime = (TimePicker) source.findViewById(R.id.end_time_picker);
+        startTime.setIs24HourView(true);
+        endTime.setIs24HourView(true);
         long time = System.currentTimeMillis();
         final Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(time);
-        startTime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        BeginTime = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
+        EndTime = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
+        startTime.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+        startTime.setMinute(calendar.get(Calendar.MINUTE));
+        endTime.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+        endTime.setMinute(calendar.get(Calendar.MINUTE));
+        startTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
-            public void onFocusChange(View view, boolean b) {
-                if (b) {
-                    new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                        @Override
-                        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                            startTime.setText(hour + ":" + minute);
-                        }
-                    }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
-                }
+            public void onTimeChanged(TimePicker timePicker, int hour, int minute) {
+                BeginTime = hour * 100 + minute;
             }
         });
-        endTime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        endTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
-            public void onFocusChange(View view, boolean b) {
-                if (b) {
-                    new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                        @Override
-                        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                            endTime.setText(hour + ":" + minute);
-                        }
-                    }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
-                }
+            public void onTimeChanged(TimePicker timePicker, int hour, int minute) {
+                EndTime = hour * 100 + minute;
             }
         });
         AlertDialog alertDialog = dialogBuilder.setView(source)
-                .setTitle("白名单时间")
+                .setTitle("免打扰时间")
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -874,10 +866,6 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        String[] starts = startTime.getText().toString().split(":");
-                        String[] ends = endTime.getText().toString().split(":");
-                        int BeginTime = Integer.parseInt(starts[0]) * 100 + Integer.parseInt(starts[1]);
-                        int EndTime = Integer.parseInt(ends[0]) * 100 + Integer.parseInt(ends[1]);
                         myCall.setBeginTime(BeginTime);
                         myCall.setEndTime(EndTime);
                     }
