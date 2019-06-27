@@ -11,7 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class QueryAttribution {
-    private String attribution = "未知号码";
+    private String attribution = "";
 
     public QueryAttribution(final String phoneNumber) {
         new Thread(new Runnable() {
@@ -38,18 +38,14 @@ public class QueryAttribution {
                 }
                 catch (Exception e) {
                     e.printStackTrace();
+                    attribution = "未知号码";
                 }
             }
         }).start();
     }
 
     public String getAttribution() {
-        try {
-            Thread.sleep(100);
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        while (attribution.isEmpty());
         return attribution;
     }
 }

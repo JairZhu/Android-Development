@@ -128,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         resolver = getContentResolver();
         makePhoneCall = new MakePhoneCall(this, resolver);
-        getApplicationContext().deleteDatabase("contacts");
-        getApplicationContext().deleteDatabase("records");
+//        getApplicationContext().deleteDatabase("contacts");
+        // getApplicationContext().deleteDatabase("records");
         initialNavigation();
         initialFloatingActionButton();
         DialpadsetOnClickListeners();
