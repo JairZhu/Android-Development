@@ -136,7 +136,6 @@ public class EditContactInfoActivity extends AppCompatActivity {
             if (number.isEmpty())
                 continue;
             String tmpName = name;
-<<<<<<< HEAD
             String pinyin = tmpName;
             if (tmpName.isEmpty()) {
                 tmpName = number;
@@ -147,12 +146,6 @@ public class EditContactInfoActivity extends AppCompatActivity {
             ContentValues values = new ContentValues();
             values.put("name", tmpName);
             values.put("pinyin", pinyin);
-=======
-            if (tmpName.isEmpty())
-                tmpName = number;
-            ContentValues values = new ContentValues();
-            values.put("name", tmpName);
->>>>>>> master
             values.put("birthday", birthday);
             values.put("number", number);
             values.put("attribution", new QueryAttribution(number).getAttribution());
