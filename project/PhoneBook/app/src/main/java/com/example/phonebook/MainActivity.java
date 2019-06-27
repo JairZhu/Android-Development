@@ -194,9 +194,14 @@ public class MainActivity extends AppCompatActivity {
                 if (item.isChecked()) {
                     //关闭免打扰
                     item.setChecked(false);
+<<<<<<< HEAD
                     myCall.setChecked(0);
                 } else {
                     //开启免打扰
+=======
+                    //TODO:关闭免打扰
+                } else {
+>>>>>>> master
                     item.setChecked(true);
                     setUpNoDisturb(item);
                 }
