@@ -2,10 +2,14 @@ package com.example.phonebook;
 
 import android.Manifest;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
 import android.graphics.Color;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
@@ -228,7 +232,15 @@ public class MainActivity extends AppCompatActivity {
         }
         if (ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_CALL_LOG)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_CALL_LOG},1000);
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_CALL_LOG},2);
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.VIBRATE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.VIBRATE}, 3);
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_NOTIFICATION_POLICY}, 4);
         }
     }
 
@@ -680,15 +692,27 @@ public class MainActivity extends AppCompatActivity {
             else if (month == 12 && monthDays(year, month) == day)
                 message = "除夕";
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            String NOTIFICATION_CHANNEL_ID = "Tips", NOTIFICATION_CHANNEL_NAME = "Tips";
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, importance);
+                notificationChannel.enableLights(true);
+                notificationChannel.setLightColor(Color.RED);
+                notificationChannel.enableVibration(true);
+                notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
             if (!message.isEmpty()) {
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"0");
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
                 Notification notification = builder.setContentTitle("节日提醒")
                         .setSmallIcon(R.drawable.festival_reminder)
                         .setContentText("今天是" + message)
                         .setTicker("节日提醒")
                         .setAutoCancel(true)
+                        .setFullScreenIntent(pendingIntent, true)
                         .setWhen(System.currentTimeMillis())
-                        .setPriority(Notification.PRIORITY_DEFAULT)
+                        .setPriority(Notification.PRIORITY_HIGH)
                         .setOngoing(false)
                         .setDefaults(Notification.DEFAULT_VIBRATE).build();
                 notificationManager.notify(0, notification);
@@ -703,14 +727,15 @@ public class MainActivity extends AppCompatActivity {
                     names.add(name);
             }
             for (int i = 0; i < names.size(); ++i) {
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "1");
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
                 Notification notification = builder.setContentTitle("生日提醒")
                         .setSmallIcon(R.drawable.birthdy_reminder)
                         .setContentText("今天是" + names.get(i) + "的生日")
                         .setTicker("生日提醒")
+                        .setFullScreenIntent(pendingIntent, true)
                         .setAutoCancel(true)
                         .setWhen(System.currentTimeMillis())
-                        .setPriority(Notification.PRIORITY_DEFAULT)
+                        .setPriority(Notification.PRIORITY_HIGH)
                         .setOngoing(false)
                         .setDefaults(Notification.DEFAULT_VIBRATE).build();
                 notificationManager.notify(i + 1, notification);
