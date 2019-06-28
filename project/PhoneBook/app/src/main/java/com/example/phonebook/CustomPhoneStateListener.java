@@ -44,14 +44,6 @@ class CustomPhoneStateListener extends PhoneStateListener {
         checked = i;
     }
 
-    public int getJudge() {
-        return judge;
-    }
-
-    public void setJudge(int i) {
-        judge = i;
-    }
-
     public void setBeginTime(int i) {
         beginTime = i;
     }
@@ -64,12 +56,43 @@ class CustomPhoneStateListener extends PhoneStateListener {
     public void onCallStateChanged(int state, String incomingNumber) {
         switch (state) {
             case TelephonyManager.CALL_STATE_IDLE:// 电话挂断
+                if (judge != 0) {
+                    getCallHistory record = new getCallHistory(context);
+                    ContentValues contentValues = new ContentValues();
+                    String number = record.getNumber();
+                    Cursor cursor = resolver.query(contactUri, new String[]{"number", "name", "attribution"}, "number = ?", new String[]{number}, null);
+                    if (cursor != null && cursor.getCount() != 0) {
+                        cursor.moveToNext();
+                        contentValues.put("name", cursor.getString(cursor.getColumnIndex("name")));
+                        contentValues.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
+                    } else {
+                        contentValues.put("name", number);
+                        contentValues.put("attribution", new QueryAttribution().getAttribution(number));
+                    }
+                    cursor.close();
+                    cursor = resolver.query(callRecordUri, new String[]{"id"}, null, null, "id desc");
+                    int index;
+                    if (cursor != null && cursor.getCount() != 0) {
+                        cursor.moveToFirst();
+                        index = cursor.getInt(0);
+                    } else {
+                        index = 0;
+                    }
+                    cursor.close();
+                    contentValues.put("id", index + 1);
+                    contentValues.put("number", number);
+                    contentValues.put("status", record.getType());
+                    contentValues.put("calltime", record.getDate());
+                    contentValues.put("duration", record.getDuration());
+                    resolver.insert(callRecordUri, contentValues);
+                    judge = 0;
+                }
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK: //电话通话的状态
                 judge = 1;
                 break;
             case TelephonyManager.CALL_STATE_RINGING: //电话响铃的状态
-                judge = 1;
+                judge = 2;
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
                 int time = Integer.parseInt(String.valueOf(cal.get(Calendar.HOUR)) + String.valueOf((cal.get(Calendar.MINUTE))));

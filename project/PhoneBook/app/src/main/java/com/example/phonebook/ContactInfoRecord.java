@@ -93,8 +93,20 @@ public class ContactInfoRecord extends Fragment {
             while (recordCursor != null && recordCursor.moveToNext()) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("calltime", recordCursor.getString(recordCursor.getColumnIndex("calltime")));
-                map.put("duration", recordCursor.getString(recordCursor.getColumnIndex("duration")));
-                map.put("status", images[recordCursor.getInt(recordCursor.getColumnIndex("status"))]);
+                int status = recordCursor.getInt(recordCursor.getColumnIndex("status"));
+                String duration = recordCursor.getString(recordCursor.getColumnIndex("duration"));
+                if (status == 1 && duration.equals("0"))
+                    duration = "未接通";
+                else if (status == 0 && duration.equals("0")) {
+                    duration = "拒接";
+                    status = 2;
+                }
+                else if (status == 2 && duration.equals("0"))
+                    duration = "未接";
+                else
+                    duration = duration + "秒";
+                map.put("duration", duration);
+                map.put("status", images[status]);
                 map.put("number", numbers.get(i));
                 lists.add(map);
             }
@@ -121,8 +133,20 @@ public class ContactInfoRecord extends Fragment {
             while (recordCursor != null && recordCursor.moveToNext()) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("calltime", recordCursor.getString(recordCursor.getColumnIndex("calltime")));
-                map.put("duration", recordCursor.getString(recordCursor.getColumnIndex("duration")));
-                map.put("status", images[recordCursor.getInt(recordCursor.getColumnIndex("status"))]);
+                int status = recordCursor.getInt(recordCursor.getColumnIndex("status"));
+                String duration = recordCursor.getString(recordCursor.getColumnIndex("duration"));
+                if (status == 1 && duration.equals("0"))
+                    duration = "未接通";
+                else if (status == 0 && duration.equals("0")) {
+                    duration = "拒接";
+                    status = 2;
+                }
+                else if (status == 2 && duration.equals("0"))
+                    duration = "未接";
+                else
+                    duration = duration + "秒";
+                map.put("duration", duration);
+                map.put("status", images[status]);
                 map.put("number", numbers.get(i));
                 lists.add(map);
             }

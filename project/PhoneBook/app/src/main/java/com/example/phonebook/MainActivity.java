@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0) {
+        if (requestCode == 0 && data != null) {
             String result = data.getStringExtra(CaptureActivity.SCAN_QRCODE_RESULT);
             String[] contactInfo = result.split("\n");
             for (int i = 0; i < contactInfo.length; ++i) {
@@ -254,7 +254,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        checkUpdate();
         updateContactListView();
         updateRecordListView();
     }
@@ -545,8 +544,20 @@ public class MainActivity extends AppCompatActivity {
             map.put("number", cursor.getString(cursor.getColumnIndex("number")));
             map.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
             map.put("calltime", cursor.getString(cursor.getColumnIndex("calltime")));
-            map.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
-            map.put("status", images[cursor.getInt(cursor.getColumnIndex("status"))]);
+            int status = cursor.getInt(cursor.getColumnIndex("status"));
+            String duration = cursor.getString(cursor.getColumnIndex("duration"));
+            if (status == 1 && duration.equals("0"))
+                duration = "未接通";
+            else if (status == 0 && duration.equals("0")) {
+                duration = "拒接";
+                status = 2;
+            }
+            else if (status == 2 && duration.equals("0"))
+                duration = "未接";
+            else
+                duration = duration + "秒";
+            map.put("duration", duration);
+            map.put("status", images[status]);
             record_list.add(map);
         }
         cursor.close();
@@ -596,8 +607,20 @@ public class MainActivity extends AppCompatActivity {
             map.put("number", cursor.getString(cursor.getColumnIndex("number")));
             map.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
             map.put("calltime", cursor.getString(cursor.getColumnIndex("calltime")));
-            map.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
-            map.put("status", images[cursor.getInt(cursor.getColumnIndex("status"))]);
+            int status = cursor.getInt(cursor.getColumnIndex("status"));
+            String duration = cursor.getString(cursor.getColumnIndex("duration"));
+            if (status == 1 && duration.equals("0"))
+                duration = "未接通";
+            else if (status == 0 && duration.equals("0")) {
+                duration = "拒接";
+                status = 2;
+            }
+            else if (status == 2 && duration.equals("0"))
+                duration = "未接";
+            else
+                duration = duration + "秒";
+            map.put("duration", duration);
+            map.put("status", images[status]);
             record_list.add(map);
         }
         cursor.close();
@@ -828,7 +851,10 @@ public class MainActivity extends AppCompatActivity {
 
     protected List<Contact> searchContect(String query) {
         List<Contact> result = new ArrayList<>();
-        String[] argList = {"%" + query + "%"};
+        String args = "";
+        for (int i = 0; i < query.length(); ++i)
+            args = args + query.charAt(i) + "%";
+        String[] argList = {args};
         Cursor cursor = resolver.query(contactUri, new String[]{"distinct name"},
                 "pinyin like ?", argList, null);
         while (cursor.moveToNext()) {
@@ -844,40 +870,6 @@ public class MainActivity extends AppCompatActivity {
         myCall = new CustomPhoneStateListener(this, resolver);
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         tm.listen(myCall, PhoneStateListener.LISTEN_CALL_STATE);
-    }
-
-    private void checkUpdate() {
-        if (myCall.getJudge() == 1) {
-            getCallHistory record = new getCallHistory(this);
-            ContentValues contentValues = new ContentValues();
-            String number = record.getNumber();
-            Cursor cursor = resolver.query(contactUri, new String[]{"number", "name", "attribution"}, "number = ?", new String[]{number}, null);
-            if (cursor != null && cursor.getCount() != 0) {
-                cursor.moveToNext();
-                contentValues.put("name", cursor.getString(cursor.getColumnIndex("name")));
-                contentValues.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
-            } else {
-                contentValues.put("name", number);
-                contentValues.put("attribution", new QueryAttribution().getAttribution(number));
-            }
-            cursor.close();
-            cursor = resolver.query(callRecordUri, new String[]{"id"}, null, null, "id desc");
-            int index;
-            if (cursor != null && cursor.getCount() != 0) {
-                cursor.moveToFirst();
-                index = cursor.getInt(0);
-            } else {
-                index = 0;
-            }
-            cursor.close();
-            contentValues.put("id", index + 1);
-            contentValues.put("number", number);
-            contentValues.put("status", record.getType());
-            contentValues.put("calltime", record.getDate());
-            contentValues.put("duration", record.getDuration());
-            resolver.insert(callRecordUri, contentValues);
-            myCall.setJudge(0);
-        }
     }
 
     private void setUpNoDisturb(final MenuItem item) {

@@ -41,5 +41,5 @@
         android:text="通话时长"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="10dp"/>
+        android:layout_marginEnd="20dp"/>
 </RelativeLayout>
