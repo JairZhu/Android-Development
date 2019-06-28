@@ -2,10 +2,13 @@ package com.example.phonebook;
 
 import android.content.ContentResolver;
 import android.content.DialogInterface;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -47,6 +50,7 @@ public class ContactInfoRecord extends Fragment {
     private ArrayList<String> numbers;
     private TextView text;
     private ImageView img;
+    private Receiver receiver;
     private int[] images = {R.drawable.callin, R.drawable.callout, R.drawable.missed};
     private Comparator<Map<String, Object>> comparator = new Comparator<Map<String, Object>>() {
         @Override
@@ -57,9 +61,23 @@ public class ContactInfoRecord extends Fragment {
                 return -1;
         }
     };
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            if (message.what == 0) {
+                updateListView();
+            }
+        }
+    };
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        setUpReceiver();
     }
 
     @Nullable
@@ -83,6 +101,19 @@ public class ContactInfoRecord extends Fragment {
     public void onResume() {
         super.onResume();
         updateListView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getContext().unregisterReceiver(receiver);
+    }
+
+    private void setUpReceiver() {
+        receiver = new Receiver(handler);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("update");
+        getContext().registerReceiver(receiver, filter);
     }
 
     private void updateListView() {

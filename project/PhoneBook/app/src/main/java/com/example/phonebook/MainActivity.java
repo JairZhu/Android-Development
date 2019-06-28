@@ -7,9 +7,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.icu.text.UnicodeSetSpanner;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -104,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView;
     private MakePhoneCall makePhoneCall;
     private SearchView searchView;
+    private Receiver receiver;
     private Comparator<Contact> comparator = new Comparator<Contact>() {
         @Override
         public int compare(Contact contact, Contact t1) {
@@ -129,6 +133,15 @@ public class MainActivity extends AppCompatActivity {
                 return -1;
         }
     };
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            if (message.what == 0) {
+                updateRecordListView();
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +162,13 @@ public class MainActivity extends AppCompatActivity {
         getPermission();
         giveTips();
         listener();
+        setUpReceiver();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
     }
 
     @Override
@@ -228,6 +248,10 @@ public class MainActivity extends AppCompatActivity {
             String[] contactInfo = result.split("\n");
             for (int i = 0; i < contactInfo.length; ++i) {
                 String[] information = contactInfo[i].split(",");
+                if (information.length != 5) {
+                    Toast.makeText(this, "无法识别", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String name = information[0], number = information[1], birthday = information[2],
                         attribution = information[3], pinyin = information[4];
                 Cursor cursor = resolver.query(contactUri, new String[]{"number"}, "number = ?",
@@ -256,6 +280,13 @@ public class MainActivity extends AppCompatActivity {
         super.onRestart();
         updateContactListView();
         updateRecordListView();
+    }
+
+    private void setUpReceiver() {
+        receiver = new Receiver(handler);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("update");
+        registerReceiver(receiver, filter);
     }
 
     private void getPermission() {
@@ -470,6 +501,8 @@ public class MainActivity extends AppCompatActivity {
                 if (newText.length() > 0) {
                     makePhoneCall.makeCall(newText);
                     updateRecordListView();
+                    DialpadLayout.setVisibility(View.GONE);
+                    DialpadActionButton.setVisibility(View.VISIBLE);
                 } else {
                     if (record_list.size() > 0) {
                         String number = record_list.get(0).get("number").toString();
@@ -869,7 +902,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void listener() {
-        myCall = new CustomPhoneStateListener(this, resolver);
+        myCall = new CustomPhoneStateListener(this);
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         tm.listen(myCall, PhoneStateListener.LISTEN_CALL_STATE);
     }

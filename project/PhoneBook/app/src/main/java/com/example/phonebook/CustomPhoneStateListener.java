@@ -3,8 +3,10 @@ package com.example.phonebook;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -18,7 +20,6 @@ import java.util.TimeZone;
 class CustomPhoneStateListener extends PhoneStateListener {
     // 重写电话状态改变时触发的方法
     private Context context;
-    private Cursor cursor;
     private int checked = 0;
     private int judge = 0;
     private int beginTime = 0;
@@ -35,9 +36,9 @@ class CustomPhoneStateListener extends PhoneStateListener {
      * CALL_STATE_OFFHOOK 接起电话时
      * CALL_STATE_RINGING 电话进来时
      */
-    CustomPhoneStateListener(Context context, ContentResolver resolver) {
+    CustomPhoneStateListener(Context context) {
         this.context = context;
-        this.resolver = resolver;
+        this.resolver = context.getContentResolver();
     }
 
     public void setChecked(int i) {
@@ -72,7 +73,7 @@ class CustomPhoneStateListener extends PhoneStateListener {
                 if (checked == 0 || time < beginTime || time > endTime) {
                     break;
                 }
-                cursor = resolver.query(contactUri, new String[]{"number", "whitelist"}, "number = ?", new String[]{incomingNumber}, null);
+                Cursor cursor = resolver.query(contactUri, new String[]{"number", "whitelist"}, "number = ?", new String[]{incomingNumber}, null);
                 if (cursor != null && cursor.getCount() != 0) {
                     cursor.moveToNext();
                     int judge = cursor.getInt(cursor.getColumnIndex("whitelist"));
@@ -120,6 +121,7 @@ class CustomPhoneStateListener extends PhoneStateListener {
                         e.printStackTrace();
                     }
                 }
+                cursor.close();
                 break;
         }
         super.onCallStateChanged(state, incomingNumber);
@@ -153,5 +155,8 @@ class CustomPhoneStateListener extends PhoneStateListener {
         contentValues.put("calltime", record.getDate());
         contentValues.put("duration", record.getDuration());
         resolver.insert(callRecordUri, contentValues);
+        Intent intent = new Intent();
+        intent.setAction("update");
+        context.sendBroadcast(intent);
     }
 }
