@@ -22,7 +22,7 @@ public class getCallHistory {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG)
                 == PackageManager.PERMISSION_GRANTED) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

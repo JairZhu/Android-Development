@@ -7,9 +7,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
+import android.database.ContentObserver;
 import android.graphics.Color;
 import android.icu.text.UnicodeSetSpanner;
 import android.os.Build;
+import android.os.Handler;
+import android.provider.CallLog;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -228,6 +231,10 @@ public class MainActivity extends AppCompatActivity {
             String[] contactInfo = result.split("\n");
             for (int i = 0; i < contactInfo.length; ++i) {
                 String[] information = contactInfo[i].split(",");
+                if (information.length != 5) {
+                    Toast.makeText(this, "无法识别", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String name = information[0], number = information[1], birthday = information[2],
                         attribution = information[3], pinyin = information[4];
                 Cursor cursor = resolver.query(contactUri, new String[]{"number"}, "number = ?",
@@ -254,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
+        checkUpdate();
         updateContactListView();
         updateRecordListView();
     }
@@ -469,6 +477,8 @@ public class MainActivity extends AppCompatActivity {
                 final String newText = textView.getText().toString();
                 if (newText.length() > 0) {
                     makePhoneCall.makeCall(newText);
+                    DialpadLayout.setVisibility(View.GONE);
+                    DialpadActionButton.setVisibility(View.VISIBLE);
                     updateRecordListView();
                 } else {
                     if (record_list.size() > 0) {
@@ -872,6 +882,40 @@ public class MainActivity extends AppCompatActivity {
         myCall = new CustomPhoneStateListener(this, resolver);
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         tm.listen(myCall, PhoneStateListener.LISTEN_CALL_STATE);
+    }
+
+    private void checkUpdate(){
+        if(myCall.getJudge() == 1){
+            Cursor cursor;
+            getCallHistory record = new getCallHistory(this);
+
+            ContentValues contentValues = new ContentValues();
+            String number = record.getNumber();
+            cursor = resolver.query(contactUri, new String[]{"number", "name", "attribution"}, "number = ?", new String[]{number}, null);
+            if (cursor != null && cursor.getCount() != 0) {
+                cursor.moveToNext();
+                contentValues.put("name", cursor.getString(cursor.getColumnIndex("name")));
+                contentValues.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
+            } else {
+                contentValues.put("name", number);
+                contentValues.put("attribution", new QueryAttribution().getAttribution(number));
+            }
+            cursor = resolver.query(callRecordUri, new String[]{"id"}, null, null, "id desc");
+            int index;
+            if (cursor != null && cursor.getCount() != 0) {
+                cursor.moveToFirst();
+                index = cursor.getInt(0);
+            } else{
+                index = 0;
+            }
+            contentValues.put("id", index + 1);
+            contentValues.put("number", number);
+            contentValues.put("status", record.getType());
+            contentValues.put("calltime", record.getDate());
+            contentValues.put("duration", record.getDuration());
+            resolver.insert(callRecordUri, contentValues);
+            myCall.setJudge(0);
+        }
     }
 
     private void setUpNoDisturb(final MenuItem item) {
