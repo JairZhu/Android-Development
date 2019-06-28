@@ -50,8 +50,6 @@ public class getCallHistory {
                 case CallLog.Calls.MISSED_TYPE:
                     type = 2;
                     break;
-                case CallLog.Calls.REJECTED_TYPE:
-                    type = 2;
             }
             cursor.close();
         }

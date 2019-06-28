@@ -854,6 +854,8 @@ public class MainActivity extends AppCompatActivity {
         String args = "";
         for (int i = 0; i < query.length(); ++i)
             args = args + query.charAt(i) + "%";
+        if (args.isEmpty())
+            args = "%";
         String[] argList = {args};
         Cursor cursor = resolver.query(contactUri, new String[]{"distinct name"},
                 "pinyin like ?", argList, null);
@@ -917,5 +919,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }).create();
         alertDialog.show();
+        Log.d("begintime", BeginTime+"");
+        Log.d("endtime", EndTime+"");
     }
 }
