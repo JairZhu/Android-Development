@@ -21,11 +21,6 @@ public class getCallHistory {
     getCallHistory(Context context) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG)
                 == PackageManager.PERMISSION_GRANTED) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             Cursor cursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI,
                     new String[]{CallLog.Calls.CACHED_NAME,
                             CallLog.Calls.NUMBER,

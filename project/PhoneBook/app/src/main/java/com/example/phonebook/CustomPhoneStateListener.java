@@ -4,9 +4,13 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObservable;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Message;
+import android.provider.CallLog;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -27,7 +31,16 @@ class CustomPhoneStateListener extends PhoneStateListener {
     private Uri callRecordUri = Uri.parse("content://com.example.providers.RecordDB/");
     private Uri contactUri = Uri.parse("content://com.example.providers.ContactDB/");
     private ContentResolver resolver;
+    private ContentObserver observer;
     private static final String TAG = "MyPhoneCallListener";
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            if (message.what == 0) {
+                addNewRecord();
+            }
+        }
+    };
 
     /**
      * 返回电话状态
@@ -39,6 +52,8 @@ class CustomPhoneStateListener extends PhoneStateListener {
     CustomPhoneStateListener(Context context) {
         this.context = context;
         this.resolver = context.getContentResolver();
+        this.observer = new Observer(context, handler);
+        resolver.registerContentObserver(CallLog.Calls.CONTENT_URI, false, observer);
     }
 
     public void setChecked(int i) {
@@ -58,7 +73,6 @@ class CustomPhoneStateListener extends PhoneStateListener {
         switch (state) {
             case TelephonyManager.CALL_STATE_IDLE:// 电话挂断
                 if (judge != 0) {
-                    addNewRecord();
                     judge = 0;
                 }
                 break;
