@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/word"
+        android:text="单词"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="20dp"
+        android:textColor="@color/red"
+        android:textSize="18sp"/>
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/radio_group"
+        android:paddingLeft="10dp"
+        android:paddingBottom="10dp"
+        android:layout_below="@id/word"
+        android:orientation="vertical">
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radio_button1"
+            android:text="意思1"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radio_button2"
+            android:text="意思2"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radio_button3"
+            android:text="意思3"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radio_button4"
+            android:text="意思4"/>
+    </RadioGroup>
+
+</RelativeLayout>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="xueyuan">
+        <item>计算机学院</item>
+        <item>材料学院</item>
+        <item>外语学院</item>
+        <item>管理学院</item>
+        <item>工学院</item>
+        <item>化工学院</item>
+        <item>电子学院</item>
+    </string-array>
+</resources>
