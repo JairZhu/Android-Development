@@ -270,8 +270,8 @@ public class MainActivity extends AppCompatActivity {
                 resolver.update(callRecordUri, values, "number = ?", new String[]{number});
                 updateContactListView();
                 updateRecordListView();
-                Toast.makeText(this, "联系人添加成功", Toast.LENGTH_SHORT).show();
             }
+            Toast.makeText(this, "联系人添加成功", Toast.LENGTH_SHORT).show();
         }
     }
 

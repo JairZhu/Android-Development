@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/start_record"
+        android:title="开始录像"
+        android:orderInCategory="0"/>
+    <item
+        android:orderInCategory="1"
+        android:title="结束录像"
+        android:id="@+id/stop_record"/>
+    <item
+        android:id="@+id/start_play"
+        android:title="录像重放"
+        android:orderInCategory="2"/>
+    <item
+        android:orderInCategory="3"
+        android:title="结束回放"
+        android:id="@+id/stop_play"/>
+</menu>
