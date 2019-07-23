@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFFFF"
+    android:orientation="vertical">
+
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFA0A0FF"
+        android:spinnerMode="dropdown" />
+
+    <com.example.isszym.canvasdrawtest.ClipView
+        android:id="@+id/clip_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.ColorFilterView
+        android:id="@+id/color_filter_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.DrawText
+        android:id="@+id/draw_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.LineEndView
+        android:id="@+id/line_end_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.MaskFilterView
+        android:id="@+id/mask_filter_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.MatrixView
+        android:id="@+id/matrix_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.PathEffectView
+        android:id="@+id/path_effect_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.PathEffectView2
+        android:id="@+id/path_effect_view2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.PathView
+        android:id="@+id/path_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.PathOpView
+        android:id="@+id/path_op_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.PorterDuffView
+        android:id="@+id/porterduff_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.PorterDuffXferView
+        android:id="@+id/porterduff_xfer_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+    <com.example.isszym.canvasdrawtest.SaveLayerView
+        android:id="@+id/save_layer_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+    <com.example.isszym.canvasdrawtest.ShaderView
+        android:id="@+id/shader_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.ShadowView
+        android:id="@+id/shadow_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.example.isszym.canvasdrawtest.ShapeView
+        android:id="@+id/shape_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</LinearLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 定义平移变换-->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="3000"
+    android:fromXDelta="0"
+    android:toXDelta="50%p"
+    android:fromYDelta="0"
+    android:toYDelta="50%p"
+    android:interpolator="@android:interpolator/accelerate_cubic"/>
+

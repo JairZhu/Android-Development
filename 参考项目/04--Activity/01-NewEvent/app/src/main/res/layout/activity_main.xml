@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/textView" />
+
+    <Button
+        android:text="Button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="34dp"
+        android:id="@+id/button2"
+        android:layout_below="@+id/button1"
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        android:text="Button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="33dp"
+        android:id="@+id/button1"
+        android:onClick="clickHandler1"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        android:text="Button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button3"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        android:text="Button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button3"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="42dp"
+        android:id="@+id/button4" />
+</RelativeLayout>
