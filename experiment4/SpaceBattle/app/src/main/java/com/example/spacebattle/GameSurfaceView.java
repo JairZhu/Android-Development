@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -21,6 +22,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private boolean isRun = true;
     private float count;
     private GameObjects gameObjects;
+    private static MediaPlayer mediaPlayer;
 
     public GameSurfaceView(Context context) {
         super(context);
@@ -80,6 +82,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         }
                         break;
                     case "开火":
+                        if (gameObjects.mySprite != null) {
+                            gameObjects.mySprite.shot(gameObjects.bullets);
+                            mediaPlayer = MediaPlayer.create(context, R.raw.bullet);
+                            mediaPlayer.start();
+                        }
                         break;
                     case "自动":
                         break;

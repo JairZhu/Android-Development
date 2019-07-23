@@ -16,12 +16,14 @@ public class GameObjects {
     Sprites sprites;
     Sprite mySprite;
     String myName;
+    Bullets bullets;
 
     GameObjects(Context context, SurfaceHolder holder) {
         this.context = context;
         this.holder = holder;
         buttons = new Buttons(context);
         buttons.pos();
+        bullets = new Bullets(context, "bullets");
     }
 
     void draw() {
@@ -29,11 +31,11 @@ public class GameObjects {
         long start = System.currentTimeMillis();
         try {
             canvas = holder.lockCanvas();
-            Log.v("lockCanvas", (System.currentTimeMillis() - start)+"");
             drawBackground(canvas);
             buttons.draw(canvas);
             if (mySprite != null)
                 mySprite.draw(canvas, System.currentTimeMillis() - start);
+            bullets.draw(canvas, System.currentTimeMillis() - start);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -47,7 +49,6 @@ public class GameObjects {
     void sleep(float runTime) {
         try {
             float leftTime = Global.LOOP_TIME - runTime;  // 剩余时间
-            Log.v("leftTime", leftTime+"");
             Thread.sleep(leftTime > 0 ? (int) leftTime : 0);
         } catch (Exception e) {
             e.printStackTrace();

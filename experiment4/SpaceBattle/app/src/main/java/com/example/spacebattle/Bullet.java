@@ -1,6 +1,8 @@
 package com.example.spacebattle;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 
 public class Bullet {
@@ -17,4 +19,27 @@ public class Bullet {
     Paint paint1;
     Context context;
 
+    Bullet(Context context, String spName, float x, float y, float dir, float step) {
+        this.context = context;
+        this.spName = spName;
+        this.seqno = seqnoX++;
+        this.x = x;
+        this.y = y;
+        this.dir = dir;
+        this.step = step;
+        paint1 = new Paint();
+        paint1.setColor(Color.RED);
+    }
+
+    void draw(Canvas canvas, long loopTime) {
+        if (canvas == null) return;
+        pos(loopTime);
+        canvas.drawCircle(Global.v2Rx(x), Global.v2Ry(y), RADIUS, paint1);
+    }
+
+    void pos(long loopTime) {
+        float step1 = this.step * loopTime / Global.LOOP_TIME;
+        x = x + step1 * (float) Math.cos(dir * Math.PI / 180);
+        y = y + step1 * (float) Math.sin(dir * Math.PI / 180);
+    }
 }

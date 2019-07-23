@@ -39,7 +39,7 @@ public class Sprite {
         paint1 = new Paint();
         paint2 = new Paint();
         paint2.setColor(Color.argb(60, 50, 50, 50));
-        paint2.setTextSize(Global.v2Rx(FONT_SIZE));
+        paint2.setTextSize(FONT_SIZE);
         curFrameIndex = 0;
         x = y = 0;
     }
@@ -54,6 +54,7 @@ public class Sprite {
         Rect srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
         Rect destRect = new Rect((int) Global.v2Rx(x), (int) Global.v2Ry(y), (int) Global.v2Rx(x + WIDTH), (int) Global.v2Ry(y + HEIGHT));
         canvas.drawBitmap(bitmap, srcRect, destRect, paint1);
+        canvas.drawText(spName, (int) Global.v2Rx(x), (int) Global.v2Ry(y), paint2);
     }
 
     // 设置精灵图像画笔和文字画笔
@@ -130,16 +131,32 @@ public class Sprite {
     }
 
     // 射击（产生新子弹）,速度是精灵移动速度的3倍
-    Bullet shot(Bullets bullets){
+    Bullet shot(Bullets bullets) {
         Point point = getShotStPos();
-//        return bullets.add(spName,-1,point.x,point.y,dir,step*3);  //-1为序号
-        return null;
-    }
-    // 根据精灵的位置定位新子弹的初始位置
-    Point getShotStPos(){
-//        return new Point((int)x1,(int)y1);
-        return null;
+        return bullets.add(spName, point.x, point.y, dir, step * 3);  //-1为序号
     }
 
+    // 根据精灵的位置定位新子弹的初始位置
+    Point getShotStPos() {
+        float x1 = 0, y1 = 0;
+        Log.v("bullet", "dir:"+dir);
+        if (dir > 0 && dir < 90) {
+            x1 = x + WIDTH * (float) Math.cos(dir * Math.PI / 180);
+            y1 = y + HEIGHT * (float) Math.sin(dir * Math.PI / 180);
+        }
+        else if (dir >= 90 && dir < 180) {
+            x1 = x;
+            y1 = y + HEIGHT * (float) Math.sin(dir * Math.PI / 180);
+        }
+        else if (dir >= 180 && dir < 270) {
+            x1 = x;
+            y1 = y;
+        }
+        else {
+            x1 = x;
+            y1 = y - HEIGHT * (float) Math.sin(dir * Math.PI / 180);
+        }
+        return new Point((int) x1, (int) y1);
+    }
 
 }

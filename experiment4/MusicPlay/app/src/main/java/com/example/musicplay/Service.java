@@ -19,24 +19,36 @@ public class Service extends IntentService {
         Log.v("music", musicName);
         switch (musicName) {
             case "stop":
-                if (mediaPlayer != null)
+                if (mediaPlayer != null) {
                     mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                }
                 break;
             case "waka":
-                if (mediaPlayer != null)
+                if (mediaPlayer != null) {
                     mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                }
                 mediaPlayer = MediaPlayer.create(Service.this, R.raw.waka);
                 mediaPlayer.start();
                 break;
             case "summer":
-                if (mediaPlayer != null)
+                if (mediaPlayer != null) {
                     mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                }
                 mediaPlayer = MediaPlayer.create(Service.this, R.raw.summer);
                 mediaPlayer.start();
                 break;
             case "wish":
-                if (mediaPlayer != null)
+                if (mediaPlayer != null) {
                     mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                }
                 mediaPlayer = MediaPlayer.create(Service.this, R.raw.wish);
                 mediaPlayer.start();
                 break;
