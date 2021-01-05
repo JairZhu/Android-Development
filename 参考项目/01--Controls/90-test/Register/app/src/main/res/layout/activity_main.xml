@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.isszym.register.MainActivity">
+
+    <TextView
+        android:id="@+id/tvUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="用户名"
+        android:textSize="18sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin" />
+    <EditText
+        android:id="@+id/etUserName"
+        android:hint="2~10个字符"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="6"
+        android:textSize="18sp"
+        android:layout_alignBaseline="@+id/tvUserName"
+        android:layout_toRightOf="@+id/tvUserName"
+        android:layout_toEndOf="@+id/tvUserName"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin" />
+
+    <EditText
+        android:id="@+id/etPassword"
+        android:hint="6~20个字符"
+        android:ems="6"
+        android:inputType="textPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvPassword"
+        android:layout_alignBottom="@+id/tvPassword"
+        android:layout_alignLeft="@+id/etUserName"
+        android:layout_alignStart="@+id/etUserName" />
+
+    <TextView
+        android:id="@+id/tvPassword"
+        android:text="密码"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_below="@+id/tvUserName"
+        android:layout_alignRight="@+id/tvUserName"
+        android:layout_alignEnd="@+id/tvUserName"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+      />
+
+    <TextView
+        android:id="@+id/tvHobby"
+        android:text="爱好"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPassword"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:textSize="18sp"
+        android:layout_alignRight="@+id/tvUserName"
+        android:layout_alignEnd="@+id/tvUserName" />
+
+    <CheckBox
+        android:id="@+id/checkBoxSport"
+        android:text="体育"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/tvHobby"
+        android:layout_alignLeft="@+id/etPassword"
+        android:layout_alignStart="@+id/etPassword"/>
+    <CheckBox
+        android:id="@+id/checkBoxMusic"
+        android:text="音乐"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/tvHobby"
+        android:layout_toRightOf="@+id/checkBoxSport"
+        android:layout_toEndOf="@+id/checkBoxSport"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin" />
+
+    <CheckBox
+        android:id="@+id/checkBoxPainting"
+        android:text="绘画"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/tvHobby"
+        android:layout_toEndOf="@+id/checkBoxMusic"
+        android:layout_toRightOf="@+id/checkBoxMusic"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+
+    <TextView
+        android:id="@+id/tvGrade"
+        android:text="年级"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvHobby"
+        android:layout_alignRight="@+id/tvUserName"
+        android:layout_alignEnd="@+id/tvUserName"
+        android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/tvGrade"
+        android:layout_toRightOf="@+id/tvGrade"
+        android:layout_toEndOf="@+id/tvGrade">
+
+        <RadioButton
+            android:id="@+id/radioButtonLowGrade"
+            android:text="低年级"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonHighGrade"
+            android:text="高年级"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/tvSchool"
+        android:text="学院"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvGrade"
+        android:layout_alignRight="@+id/tvUserName"
+        android:layout_alignEnd="@+id/tvUserName"
+        android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
+    <Spinner
+        android:id="@+id/spinnerSchool"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:entries="@array/school"
+        style="@style/Widget.AppCompat.Spinner.DropDown"
+        android:layout_alignTop="@+id/tvSchool"
+        android:layout_alignLeft="@+id/checkBoxSport"
+        android:layout_alignStart="@+id/checkBoxSport" />
+
+    <Switch
+        android:id="@+id/switchOfficer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textViewOfficer"
+        android:layout_alignLeft="@+id/spinnerSchool"
+        android:layout_alignStart="@+id/spinnerSchool"
+        android:layout_marginTop="21dp" />
+
+    <TextView
+        android:text="全日制"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewOfficer"
+        android:textSize="18sp"
+        android:layout_below="@+id/tvSchool"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_alignRight="@+id/tvUserName"
+        android:layout_alignEnd="@+id/tvUserName" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:src="@drawable/zyx"
+        android:layout_width="50dp"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/radioGroup"
+        android:layout_toEndOf="@+id/radioGroup" />
+
+    <Button
+        android:text="注册"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="23dp"
+        android:id="@+id/button"
+        android:textSize="18sp"
+        android:layout_below="@+id/switchOfficer"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>

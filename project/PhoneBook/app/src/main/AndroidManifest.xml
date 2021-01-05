@@ -25,6 +25,7 @@
         <activity
             android:windowSoftInputMode="adjustPan"
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name"
             android:launchMode="singleTask">
             <intent-filter>
@@ -37,31 +38,34 @@
             <meta-data android:name="android.app.searchable"
                        android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".AddContactActivity">
+        <activity android:name=".AddContactActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="AddContact" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ContactInfoActivity">
+        <activity android:name=".ContactInfoActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="ContactInfo" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".StoreContactActivity">
+        <activity android:name=".StoreContactActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="StoreContact" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".EditContactInfoActivity">
+        <activity android:name=".EditContactInfoActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="EditContactInfo" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

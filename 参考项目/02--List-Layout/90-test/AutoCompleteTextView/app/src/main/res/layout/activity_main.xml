@@ -1,0 +1,24 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <AutoCompleteTextView
+        android:id="@+id/atv_content"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:completionHint="请输入搜索内容"
+        android:completionThreshold="1"
+        android:dropDownHorizontalOffset="5dp" />
+
+    <MultiAutoCompleteTextView
+        android:id="@+id/matv_content"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:completionThreshold="1"
+        android:dropDownHorizontalOffset="5dp"
+        android:text="" />
+
+</LinearLayout>

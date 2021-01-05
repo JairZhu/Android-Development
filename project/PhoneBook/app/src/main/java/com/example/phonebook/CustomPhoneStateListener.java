@@ -2,8 +2,14 @@ package com.example.phonebook;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.database.ContentObservable;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
+import android.provider.CallLog;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -16,16 +22,37 @@ import java.util.TimeZone;
 
 class CustomPhoneStateListener extends PhoneStateListener {
     // 重写电话状态改变时触发的方法
+<<<<<<< HEAD
     Context context;
     Cursor cursor;
     int checked = 0;
     int judge = 0;
     int beginTime = 0;
     int endTime = 0;
+=======
+    private Context context;
+    private int checked = 0;
+    private int judge = 0;
+    private int beginTime = 0;
+    private int endTime = 0;
+>>>>>>> origin/HEAD
     private Uri callRecordUri = Uri.parse("content://com.example.providers.RecordDB/");
     private Uri contactUri = Uri.parse("content://com.example.providers.ContactDB/");
     private ContentResolver resolver;
+    private ContentObserver observer;
     private static final String TAG = "MyPhoneCallListener";
+<<<<<<< HEAD
+=======
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            if (message.what == 0) {
+                addNewRecord();
+            }
+        }
+    };
+
+>>>>>>> origin/HEAD
     /**
      * 返回电话状态
      *
@@ -33,9 +60,15 @@ class CustomPhoneStateListener extends PhoneStateListener {
      * CALL_STATE_OFFHOOK 接起电话时
      * CALL_STATE_RINGING 电话进来时
      */
+<<<<<<< HEAD
     CustomPhoneStateListener(Context context,ContentResolver resolver){
+=======
+    CustomPhoneStateListener(Context context) {
+>>>>>>> origin/HEAD
         this.context = context;
-        this.resolver = resolver;
+        this.resolver = context.getContentResolver();
+        this.observer = new Observer(context, handler);
+        resolver.registerContentObserver(CallLog.Calls.CONTENT_URI, false, observer);
     }
 
     public void setChecked(int i){
@@ -58,6 +91,12 @@ class CustomPhoneStateListener extends PhoneStateListener {
     public void onCallStateChanged(int state, String incomingNumber) {
         switch (state) {
             case TelephonyManager.CALL_STATE_IDLE:// 电话挂断
+<<<<<<< HEAD
+=======
+                if (judge != 0) {
+                    judge = 0;
+                }
+>>>>>>> origin/HEAD
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK: //电话通话的状态
                 judge = 1;
@@ -70,8 +109,13 @@ class CustomPhoneStateListener extends PhoneStateListener {
                 if(checked == 0 || time < beginTime || time > endTime){
                     break;
                 }
+<<<<<<< HEAD
                 cursor = resolver.query(contactUri, new String[]{"number","whitelist"},"number = ?",new String[]{incomingNumber},null);
                 if(cursor != null && cursor.getCount()!= 0){
+=======
+                Cursor cursor = resolver.query(contactUri, new String[]{"number", "whitelist"}, "number = ?", new String[]{incomingNumber}, null);
+                if (cursor != null && cursor.getCount() != 0) {
+>>>>>>> origin/HEAD
                     cursor.moveToNext();
                     int judge = cursor.getInt(cursor.getColumnIndex("whitelist"));
                     if(judge == 0){
@@ -118,8 +162,45 @@ class CustomPhoneStateListener extends PhoneStateListener {
                         e.printStackTrace();
                     }
                 }
+                cursor.close();
                 break;
         }
         super.onCallStateChanged(state, incomingNumber);
     }
+<<<<<<< HEAD
+=======
+    private void addNewRecord() {
+        getCallHistory record = new getCallHistory(context);
+        ContentValues contentValues = new ContentValues();
+        String number = record.getNumber();
+        Cursor cursor = resolver.query(contactUri, new String[]{"number", "name", "attribution"}, "number = ?", new String[]{number}, null);
+        if (cursor != null && cursor.getCount() != 0) {
+            cursor.moveToNext();
+            contentValues.put("name", cursor.getString(cursor.getColumnIndex("name")));
+            contentValues.put("attribution", cursor.getString(cursor.getColumnIndex("attribution")));
+        } else {
+            contentValues.put("name", number);
+            contentValues.put("attribution", new QueryAttribution().getAttribution(number));
+        }
+        cursor.close();
+        cursor = resolver.query(callRecordUri, new String[]{"id"}, null, null, "id desc");
+        int index;
+        if (cursor != null && cursor.getCount() != 0) {
+            cursor.moveToFirst();
+            index = cursor.getInt(0);
+        } else {
+            index = 0;
+        }
+        cursor.close();
+        contentValues.put("id", index + 1);
+        contentValues.put("number", number);
+        contentValues.put("status", record.getType());
+        contentValues.put("calltime", record.getDate());
+        contentValues.put("duration", record.getDuration());
+        resolver.insert(callRecordUri, contentValues);
+        Intent intent = new Intent();
+        intent.setAction("update");
+        context.sendBroadcast(intent);
+    }
+>>>>>>> origin/HEAD
 }

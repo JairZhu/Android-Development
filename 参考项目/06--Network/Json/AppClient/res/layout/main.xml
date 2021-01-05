@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tvData"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="数据" />
+
+    <Button
+        android:id="@+id/btnTxt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="与服务器端交互Json数据" />
+
+    <Button
+        android:id="@+id/btnGet"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Get方式与服务器端交互数据" />
+
+    <Button
+        android:id="@+id/btnPost"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Post方式与服务器端交互数据" />
+
+    <Button
+        android:id="@+id/btnHttpClient"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="HttpClient方式与服务器端交互数据" />
+
+    <Button
+        android:id="@+id/btnUploadFile"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="上传文件到服务器端" />
+
+    <Button
+        android:id="@+id/btnDownloadFile"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="从服务器端下载文件" />
+
+    <Button
+        android:id="@+id/btnReadTxtFile"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="从服务器端读取文本文件" />
+
+</LinearLayout>

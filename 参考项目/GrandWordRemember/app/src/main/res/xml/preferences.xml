@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="外观设置">
+        <ListPreference
+            android:key="list_key"
+            android:title="单词颜色"
+            android:summary="black"
+            android:defaultValue="black"
+            android:entries="@array/list_preference"
+            android:entryValues="@array/list_preference"
+            android:dialogTitle="选择单词颜色"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="其他设置">
+        <EditTextPreference
+            android:key="edittext_key"
+            android:defaultValue="30"
+            android:summary="30"
+            android:numeric="integer"
+            android:title="测试单词数"/>
+        <CheckBoxPreference
+            android:key="checkbox_key"
+            android:defaultValue="true"
+            android:summary="是"
+            android:title="保存时是否统计"/>
+    </PreferenceCategory>
+</PreferenceScreen>

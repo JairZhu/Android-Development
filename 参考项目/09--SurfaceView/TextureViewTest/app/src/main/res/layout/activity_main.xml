@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.isszym.textureviewtest.MainActivity"
+    tools:showIn="@layout/activity_main">
+
+    <Button
+        android:id="@+id/button_transform"
+        android:text="旋转"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextureView
+        android:id="@+id/surface"
+        android:layout_gravity="center"
+        android:layout_width="300dp"
+        android:layout_height="300dp" />
+</FrameLayout>

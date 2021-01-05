@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+	<item>
+		<bitmap android:src="@mipmap/ic_launcher"
+			android:gravity="center" />
+	</item>
+	<item android:top="60dp" android:left="30dp">
+		<bitmap android:src="@drawable/bk2"
+			android:gravity="center" />
+	</item>
+	<item android:top="80dp" android:left="50dp">
+		<bitmap android:src="@mipmap/ic_launcher"
+			android:gravity="center" />
+	</item>
+</layer-list>

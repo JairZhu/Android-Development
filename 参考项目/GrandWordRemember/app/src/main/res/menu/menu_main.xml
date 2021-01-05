@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.grandwordremember.MainActivity">
+    <item android:id="@+id/test"
+        android:title="进入测验"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/add_word"
+        android:orderInCategory="0"
+        android:title="新增单词"
+        app:showAsAction="never" />
+    <item android:id="@+id/learning_statistics"
+        android:orderInCategory="1"
+        android:title="学习统计"
+        app:showAsAction="never"/>
+    <item android:id="@+id/find_word"
+        android:orderInCategory="2"
+        android:title="查找单词"
+        app:showAsAction="never"/>
+    <item android:id="@+id/system_settings"
+        android:orderInCategory="3"
+        android:title="系统设置"
+        app:showAsAction="never"/>
+</menu>

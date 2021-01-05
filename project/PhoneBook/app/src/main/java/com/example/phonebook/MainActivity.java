@@ -7,12 +7,20 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
+<<<<<<< HEAD
 import android.database.ContentObserver;
+=======
+import android.content.IntentFilter;
+>>>>>>> origin/HEAD
 import android.graphics.Color;
 import android.icu.text.UnicodeSetSpanner;
 import android.os.Build;
 import android.os.Handler;
+<<<<<<< HEAD
 import android.provider.CallLog;
+=======
+import android.os.Message;
+>>>>>>> origin/HEAD
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -107,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView;
     private MakePhoneCall makePhoneCall;
     private SearchView searchView;
+    private Receiver receiver;
     private Comparator<Contact> comparator = new Comparator<Contact>() {
         @Override
         public int compare(Contact contact, Contact t1) {
@@ -132,6 +141,15 @@ public class MainActivity extends AppCompatActivity {
                 return -1;
         }
     };
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            if (message.what == 0) {
+                updateRecordListView();
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +170,13 @@ public class MainActivity extends AppCompatActivity {
         getPermission();
         giveTips();
         listener();
+        setUpReceiver();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
     }
 
     @Override
@@ -253,8 +278,8 @@ public class MainActivity extends AppCompatActivity {
                 resolver.update(callRecordUri, values, "number = ?", new String[]{number});
                 updateContactListView();
                 updateRecordListView();
-                Toast.makeText(this, "联系人添加成功", Toast.LENGTH_SHORT).show();
             }
+            Toast.makeText(this, "联系人添加成功", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -264,6 +289,13 @@ public class MainActivity extends AppCompatActivity {
         checkUpdate();
         updateContactListView();
         updateRecordListView();
+    }
+
+    private void setUpReceiver() {
+        receiver = new Receiver(handler);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("update");
+        registerReceiver(receiver, filter);
     }
 
     private void getPermission() {
@@ -480,6 +512,8 @@ public class MainActivity extends AppCompatActivity {
                     DialpadLayout.setVisibility(View.GONE);
                     DialpadActionButton.setVisibility(View.VISIBLE);
                     updateRecordListView();
+                    DialpadLayout.setVisibility(View.GONE);
+                    DialpadActionButton.setVisibility(View.VISIBLE);
                 } else {
                     if (record_list.size() > 0) {
                         String number = record_list.get(0).get("number").toString();
@@ -879,7 +913,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void listener() {
-        myCall = new CustomPhoneStateListener(this, resolver);
+        myCall = new CustomPhoneStateListener(this);
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         tm.listen(myCall, PhoneStateListener.LISTEN_CALL_STATE);
     }

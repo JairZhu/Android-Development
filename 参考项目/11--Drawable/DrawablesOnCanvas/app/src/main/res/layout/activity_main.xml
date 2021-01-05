@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/holo_blue_bright">
+    <!-- BitmapDrawable -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/bitmap"
+        android:scaleType="centerInside"
+        />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <!-- ScaleDrawable -->
+        <ImageView
+            android:id="@+id/scaleView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/scale" />
+        <!-- TransitionDrawable-->
+        <ImageView
+            android:id="@+id/transView"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/transition" />
+        <!-- RotateDrawable-->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/rotate" />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <!-- InsetDrawable -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/inset" />
+        <!-- LayerDrawable -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/layer" />
+        <!-- NinePitchDrawable -->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/girl1"
+            android:text="9Pitch" />
+    </LinearLayout>
+    <!-- 定义一个拖动条，并改变轨道外观 -->
+    <!-- LayerDrawable -->
+    <SeekBar
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progressDrawable="@drawable/layer_bar" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    <!-- 使用StateListDrawable资源 -->
+    <EditText
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:textColor="@drawable/state" />
+    <EditText
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:textColor="@drawable/state" />
+    </LinearLayout>
+    <!-- ClipDrawable -->
+    <ImageView
+        android:id="@+id/clipView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitStart"
+        android:src="@drawable/clip" />
+
+
+</LinearLayout>
